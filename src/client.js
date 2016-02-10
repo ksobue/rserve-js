@@ -121,6 +121,8 @@ class RserveClient extends EventEmitter {
                 type: _.DT_STRING,
                 value: adminPswd
             });
+        } else {
+            cb = arguments[0];
         }
         
         this.sendMessage({
