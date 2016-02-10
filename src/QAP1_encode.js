@@ -19,11 +19,11 @@ function bool(value) {
     return byte;
 }
 
-function serializeMessage(msg) {
+function encodeMessage(msg) {
     let buffers = new Buffers();
     
     msg.params.forEach(function(param) {
-        let buffer = serializeData(param);
+        let buffer = encodeData(param);
         buffers.push(buffer);
     });
     
@@ -44,7 +44,7 @@ function serializeMessage(msg) {
     
     return buffers.toString();
     
-    function serializeData(data) {
+    function encodeData(data) {
         let buffers = new Buffers();
         
         switch (data.type) {
@@ -88,7 +88,7 @@ function serializeMessage(msg) {
         case _.DT_SEXP:
             {
                 let exprs = data.value;
-                let buffer = serializeSEXP(exprs);
+                let buffer = encodeSEXP(exprs);
                 buffers.push(buffer);
             }
             break;
@@ -101,7 +101,7 @@ function serializeMessage(msg) {
                 buffers.push(buffer);
                 for (let i = 0; i < n; i++) {
                     let data = arr[i];
-                    let buffer = serializeData(data);
+                    let buffer = encodeData(data);
                     buffers.push(buffer);
                 }
             }
@@ -146,11 +146,11 @@ function serializeMessage(msg) {
         return buffers.toBuffer();
         
         
-        function serializeSEXP(expr) {
+        function encodeSEXP(expr) {
             let buffers = new Buffers();
             
             if (expr.attr !== undefined) {
-                let buffer = serializeSEXP(expr.attr);
+                let buffer = encodeSEXP(expr.attr);
                 buffers.push(buffer);
             }
             
@@ -212,7 +212,7 @@ function serializeMessage(msg) {
                 {
                     let vector = expr.value;
                     for (let i = 0; i < vector.length; i++) {
-                        let buffer = serializeSEXP(vector[i]);
+                        let buffer = encodeSEXP(vector[i]);
                         buffers.push(buffer);
                     }
                 }
@@ -221,17 +221,17 @@ function serializeMessage(msg) {
             case _.XT_LANG:
                 {
                     let list = expr.value;
-                    let headBuffer = serializeSEXP(list.head);
-                    let valsBuffer = serializeSEXP(list.vals);
-                    let tagBuffer = serializeSEXP(list.tag);
+                    let headBuffer = encodeSEXP(list.head);
+                    let valsBuffer = encodeSEXP(list.vals);
+                    let tagBuffer = encodeSEXP(list.tag);
                     buffers.push(headBuffer, valsBuffer, tagBuffer);
                 }
                 break;
             case _.XT_CLOS:
                 {
                     let cols = expr.value;
-                    let formalsBuffer = serializeSEXP(cols.formals);
-                    let bodyBuffer = serializeSEXP(cols.body);
+                    let formalsBuffer = encodeSEXP(cols.formals);
+                    let bodyBuffer = encodeSEXP(cols.body);
                     buffers.push(formalsBuffer, bodyBuffer);
                 }
                 break;
@@ -241,8 +241,8 @@ function serializeMessage(msg) {
                     let listTag = expr.value;
                     for (let tag in listTag) {
                         let val = listTag[tag];
-                        let valBuffer = serializeSEXP(val);
-                        let tagBuffer = serializeSEXP(tag);
+                        let valBuffer = encodeSEXP(val);
+                        let tagBuffer = encodeSEXP(tag);
                         buffers.push(valBuffer, tagBuffer);
                     }
                 }
@@ -371,4 +371,4 @@ function serializeMessage(msg) {
     }
 }
 
-module.exports = serializeMessage;
+module.exports = encodeMessage;

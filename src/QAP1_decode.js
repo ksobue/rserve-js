@@ -19,7 +19,7 @@ function bool(byte) {
     return value;
 }
 
-function parseMessage(buffer) {
+function decodeMessage(buffer) {
     let pos = 0;
     
     let command = buffer.readInt32LE(pos);
@@ -38,7 +38,7 @@ function parseMessage(buffer) {
     
     let params = [];
     while (pos < buffer.length) {
-        let param = parseData(buffer);
+        let param = decodeData(buffer);
         params.push(param);
     }
     
@@ -49,7 +49,7 @@ function parseMessage(buffer) {
     };
     
     
-    function parseData(buffer) {
+    function decodeData(buffer) {
         let value;
         
         let type = buffer.readInt8(pos + 0);
@@ -86,14 +86,14 @@ function parseMessage(buffer) {
             pos += length;
             break;
         case _.DT_SEXP:
-            value = parseSEXP(buffer);
+            value = decodeSEXP(buffer);
             break;
         case _.DT_ARRAY: // deprecated
             value = [];
             let n = buffer.readInt32LE(pos);
             pos += 4;
             for (let i = 0; i < n; i++) {
-                let val = parseData(buffer);
+                let val = decodeData(buffer);
                 value.push(val);
             }
             break;
@@ -112,7 +112,7 @@ function parseMessage(buffer) {
         return value;
         
         
-        function parseSEXP(buffer) {
+        function decodeSEXP(buffer) {
             let value, attr;
             
             let type = buffer.readInt8(pos);
@@ -129,7 +129,7 @@ function parseMessage(buffer) {
             let eoa = pos + length;
             
             if (_.HAS_ATTR(type)) {
-                attr = parseSEXP(buffer).value;
+                attr = decodeSEXP(buffer).value;
             }
             
             let dataLength = eoa - pos; // without attribute
@@ -184,7 +184,7 @@ function parseMessage(buffer) {
                 {
                     value = [];
                     while (pos < eoa) {
-                        let val = parseSEXP(buffer).value;
+                        let val = decodeSEXP(buffer).value;
                         value.push(val);
                     }
                 }
@@ -193,17 +193,17 @@ function parseMessage(buffer) {
             case _.XT_LANG:
                 {
                     value = {
-                        head: parseSEXP(buffer).value,
-                        vals: parseSEXP(buffer).value,
-                        tag: parseSEXP(buffer).value
+                        head: decodeSEXP(buffer).value,
+                        vals: decodeSEXP(buffer).value,
+                        tag: decodeSEXP(buffer).value
                     };
                 }
                 break;
             case _.XT_CLOS:
                 {
                     value = {
-                        formals: parseSEXP(buffer).value,
-                        body: parseSEXP(buffer).value
+                        formals: decodeSEXP(buffer).value,
+                        body: decodeSEXP(buffer).value
                     };
                 }
                 break;
@@ -212,8 +212,8 @@ function parseMessage(buffer) {
                 {
                     value = {};
                     while (pos < eoa) {
-                        let val = parseSEXP(buffer).value;
-                        let tag = parseSEXP(buffer).value;
+                        let val = decodeSEXP(buffer).value;
+                        let tag = decodeSEXP(buffer).value;
                         value[tag] = val;
                     }
                 }
@@ -326,4 +326,4 @@ function parseMessage(buffer) {
     }
 }
 
-module.exports = parseMessage;
+module.exports = decodeMessage;

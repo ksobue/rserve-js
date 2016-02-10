@@ -6,8 +6,8 @@ let net = require("net");
 let Buffers = require("buffers");
 
 let _ = require("./Rsrv");
-let parseMessage = require("./QAP1_parser");
-let serializeMessage = require("./QAP1_serializer");
+let decodeMessage = require("./QAP1_decode");
+let encodeMessage = require("./QAP1_encode");
 let errorMessage = require("./error");
 
 
@@ -32,7 +32,7 @@ class RserveClient extends EventEmitter {
             if (readBuffers.length >= 32) {
                 let idString = readBuffers.splice(0,32);
                 try {
-                    parseServerCapability(idString);
+                    decodeServerCapability(idString);
                     this.emit("connect");
                 } catch (err) {
                     this.emit("error", err);
@@ -47,7 +47,7 @@ class RserveClient extends EventEmitter {
         });
         
         this.sendMessage = function(msg, cb) {
-            let writeBuffer = serializeMessage(msg);
+            let writeBuffer = encodeMessage(msg);
             client.write(writeBuffer);
             
             handler = function() {
@@ -67,7 +67,7 @@ class RserveClient extends EventEmitter {
                         let buffer = readBuffers.splice(0, 16 + length).slice();
                         
                         try {
-                            let msg = parseMessage(buffer);
+                            let msg = decodeMessage(buffer);
                             if ((msg.command & _.RESP_OK) !== _.RESP_OK) {
                                 let statusCode = _.CMD_STAT(msg.command);
                                 cb(new Error(errorMessage(statusCode)), msg.params);
@@ -75,7 +75,7 @@ class RserveClient extends EventEmitter {
                             
                             cb(null, msg);
                         } catch (err) {
-                            cb(new Error("Could not parse message from Rserve. \n" + err));
+                            cb(new Error("Could not decode message from Rserve. \n" + err));
                         }
                     }
                 }
@@ -189,8 +189,19 @@ class RserveClient extends EventEmitter {
         
     }
 
-    ctrlShutdown() {
-        
+    ctrlShutdown(cb) {
+        this.sendMessage({
+            command: _.CMD_ctrlShutdown,
+            params: []
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+                
+            cb(null, msg.params);
+        });
     }
 
     close() {
@@ -200,7 +211,7 @@ class RserveClient extends EventEmitter {
 
 
 
-function parseServerCapability(data) {
+function decodeServerCapability(data) {
     // read 32 bytes ID string
     if (data.length >= 32) {
         let idString = data.slice(0, 32);

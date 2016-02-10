@@ -28,8 +28,5 @@ This node module will communicate with R/Rserve over TCP/IP socket, allowing use
         });
     });
 
-This above code will display:
-  (todo)
-
 ## License
 MIT
