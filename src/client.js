@@ -113,8 +113,28 @@ class RserveClient extends EventEmitter {
         });
     }
 
-    shutdown(_adminPswd) {
+    shutdown(adminPswd, cb) {
+        let params = [];
         
+        if (adminPswd !== undefined) {
+            params.push({
+                type: _.DT_STRING,
+                value: adminPswd
+            });
+        }
+        
+        this.sendMessage({
+            command: _.CMD_shutdown,
+            params: params
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+                
+            cb(null, msg.params);
+        });
     }
 
     switch(_protocol) {
