@@ -32,7 +32,7 @@ class RserveClient extends EventEmitter {
             if (readBuffers.length >= 32) {
                 let idString = readBuffers.splice(0,32);
                 try {
-                    decodeServerCapability(idString);
+                    this.info = decodeServerCapability(idString);
                     this.emit("connect");
                 } catch (err) {
                     this.emit("error", err);
@@ -211,42 +211,34 @@ class RserveClient extends EventEmitter {
 
 
 
-function decodeServerCapability(data) {
-    // read 32 bytes ID string
-    if (data.length >= 32) {
-        let idString = data.slice(0, 32);
-        let attrs = [];
-        for (let i = 0; i < idString.length; i+= 4) {
-            let attr = idString.slice(i, i + 4).toString("utf8");
-            attrs.push(attr);
+function decodeServerCapability(buffer) {
+    let attrs = [];
+    for (let i = 0; i < buffer.length; i+= 4) {
+        let attr = buffer.toString("utf8", i, i + 4);
+        
+        if (attr === "\r\n\r\n") {
+            break;
         }
         
-        let idSignature = attrs[0];
-        if (idSignature !== "Rsrv") { // R-server ID signature
-            throw new Error("Not talking to Rserve.");
-        }
-        let rServeProtocolVer = attrs[1];
-        if (rServeProtocolVer !== "0103") { // version of the R server protocol
-            throw new Error("Unsupported protocol version: " + rServeProtocolVer);
-        }
-        let communicationProtocol = attrs[2];
-        if (communicationProtocol !== "QAP1") { // protocol used for communication (here Quad Attributes Packets v1)
-            throw new Error("Unsupported communication protocol: " + communicationProtocol);
-        }
+        attr = attr.replace(/\r\n/g, "").replace(/\-/g, "");
         
-        let additionalAttrs = [];
-        for (let i = 3; i < attrs.length; i++) {
-            let attr = attrs[i];
-            if (attr === "\r\n\r\n") {
-                break;
-            }
-            
-            attr = attr.replace(/\r\n/g, "").replace(/\-/g, "");
-            if (attr !== "") {
-                additionalAttrs.push(attr);
-            }
-        }
+        attrs.push(attr);
     }
+    
+    let idSignature = attrs[0];
+    if (idSignature !== "Rsrv") { // R-server ID signature
+        throw new Error("Not talking to Rserve.");
+    }
+    let rServeProtocolVer = attrs[1];
+    if (rServeProtocolVer !== "0103") { // version of the R server protocol
+        throw new Error("Unsupported protocol version: " + rServeProtocolVer);
+    }
+    let communicationProtocol = attrs[2];
+    if (communicationProtocol !== "QAP1") { // protocol used for communication (here Quad Attributes Packets v1)
+        throw new Error("Unsupported communication protocol: " + communicationProtocol);
+    }
+    
+    return attrs;
 }
 
 module.exports = RserveClient;

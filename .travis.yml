@@ -1,7 +1,5 @@
 language: node_js
 before_install:
-  - cat /etc/apt/sources.list
-  - sudo deb https://cran.rstudio.com/bin/linux/ubuntu/ precise
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
   - sudo apt-get install -qq r-base-dev
