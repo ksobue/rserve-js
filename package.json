@@ -1,26 +1,30 @@
 {
-    "name": "rserve-js",
-    "version": "0.0.1",
-    "description": "Rserve client in JavaScript",
-    "main": "index.js",
-    "scripts": {
-        "pretest": "R CMD Rserve --RS-enable-control",
-        "test": "jasmine",
-        "posttest": "node spec/posttest.js"
-    },
-    "dependencies": {
-        "buffers": "^0.1.1"
-    },
-    "devDependencies": {
-        "jasmine": "^2.4.1"
-    },
-    "engines": {
-        "node": ">=4.0"
-    },
-    "keywords": [
-        "R",
-        "Rserve"
-    ],
-    "author": "Koichiro Sobue (https://github.com/ksobue/)",
-    "license": "MIT"
+  "name": "rserve-js",
+  "version": "0.0.1",
+  "description": "Rserve client in JavaScript",
+  "keywords": [
+    "R",
+    "Rserve"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "scripts": {
+    "pretest": "R CMD Rserve --RS-enable-control",
+    "test": "jasmine",
+    "posttest": "node spec/posttest.js"
+  },
+  "dependencies": {
+    "buffers": "^0.1.1"
+  },
+  "devDependencies": {
+    "jasmine": "^2.4.1"
+  },
+  "author": "Koichiro Sobue (https://github.com/ksobue/)",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/ksobue/rserve-js.git"
+  },
+  "license": "MIT"
 }
