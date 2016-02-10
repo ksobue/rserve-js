@@ -2,7 +2,7 @@ language: node_js
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
-  - sudo apt-get install -qq r-base-dev
   - sudo apt-get install -qq r-cran-rserve
 node_js:
+  - "4.0"
   - "stable"

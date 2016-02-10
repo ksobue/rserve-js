@@ -3,8 +3,6 @@
 let Rserve = require("..");
 
 let client = Rserve.connect("localhost", 6311, function() {
-    console.log(client.info)
-    
     // Try shutdown as admin user.
     client.ctrlShutdown(function(err, _result) {
         if (err) {
