@@ -10,22 +10,23 @@ This node module will communicate with R/Rserve over TCP/IP socket, allowing use
     let Rserve = require("rserve-js");
     
     let client = Rserve.connect("localhost", 6311, function() {
-      console.log("Connected to Rserve.");
-      
-      client.eval("data(iris)", function(err, response) {
-        if (err) {
-          throw err;
-        }
+        console.log("Connected to Rserve.");
         
-        client.eval("iris", function(err, response) {
-          if (err) {
-            throw err;
-          }
+        client.eval("data(iris)", function(err, response) {
+            if (err) {
+                throw err;
+            }
+            console.log("'iris' table is loaded.");
             
-          console.log(response);
+            client.eval("dim(iris)", function(err, response) {
+                if (err) {
+                    throw err;
+                }
+                
+                console.log(response.value); // shows dimension of iris table
+            });
         });
     });
-  });
 
 This above code will display:
   (todo)
