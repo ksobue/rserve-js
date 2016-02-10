@@ -1,4 +1,4 @@
-# rserve-js
+# rserve-js [![Build Status](https://travis-ci.org/ksobue/rserve-js.svg)](https://travis-ci.org/ksobue/rserve-js)
 RServe client in JavaScript
 
 This node module will communicate with R/Rserve over TCP/IP socket, allowing user to evaluate R statements from JavaScript and get the result as JavaScript object.
