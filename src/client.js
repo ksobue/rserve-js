@@ -116,13 +116,11 @@ class RserveClient extends EventEmitter {
     shutdown(adminPswd, cb) {
         let params = [];
         
-        if (adminPswd !== undefined) {
+        if (adminPswd !== null) {
             params.push({
                 type: _.DT_STRING,
                 value: adminPswd
             });
-        } else {
-            cb = arguments[0];
         }
         
         this.sendMessage({

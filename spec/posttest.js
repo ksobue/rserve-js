@@ -9,7 +9,7 @@ let client = Rserve.connect("localhost", 6311, function() {
     client.ctrlShutdown(function(err, _result) {
         if (err) {
             // If control comand is not supported, try shutdown as normal user.
-            client.shutdown(function(err, _result) {
+            client.shutdown(null, function(err, _result) {
                 if (err) {
                     throw err;
                 }
