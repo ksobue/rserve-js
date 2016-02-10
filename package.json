@@ -4,7 +4,7 @@
     "description": "Rserve client in JavaScript",
     "main": "index.js",
     "scripts": {
-        "pretest": "R CMD Rserve --RS-enable-control",
+        "pretest": "R CMD Rserve --version && R CMD Rserve --help && R CMD Rserve --RS-enable-control",
         "test": "jasmine",
         "posttest": "node spec/posttest.js"
     },
