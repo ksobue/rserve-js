@@ -1,0 +1,24 @@
+{
+    "name": "rserve-js",
+    "version": "0.0.1",
+    "description": "Rserve client in JavaScript",
+    "main": "index.js",
+    "scripts": {
+        "test": "jasmine"
+    },
+    "dependencies": {
+        "buffers": "^0.1.1"
+    },
+    "devDependencies": {
+        "jasmine": "^2.4.1"
+    },
+    "engines": {
+        "node": ">=4.0"
+    },
+    "keywords": [
+        "R",
+        "Rserve"
+    ],
+    "author": "Koichiro Sobue (https://github.com/ksobue/)",
+    "license": "MIT"
+}
