@@ -1,4 +1,4 @@
-# rserve-js [![Build Status](https://travis-ci.org/ksobue/rserve-js.svg)](https://travis-ci.org/ksobue/rserve-js) [![npm version](https://badge.fury.io/js/rserve-js.svg)](https://badge.fury.io/js/rserve-js)
+# rserve-js [![Build Status](https://travis-ci.org/ksobue/rserve-js.svg)](https://travis-ci.org/ksobue/rserve-js) [![npm version](https://badge.fury.io/js/rserve-js.svg)](https://badge.fury.io/js/rserve-js) [![Coverage Status](https://coveralls.io/repos/github/ksobue/rserve-js/badge.svg?branch=master)](https://coveralls.io/github/ksobue/rserve-js?branch=master)
 
 RServe client in JavaScript
 
