@@ -34,7 +34,7 @@ describe("rserve-js-client", function() {
     });
     
     it("supports integers (XT_ARRAY_INT)", function(done) {
-        evaluatesTo("c(as.integer(1), as.integer(3))", {value: [1, 3]}, done);
+        evaluatesTo("c(as.integer(1), as.integer(3))", {value: [1, 4]}, done);
     });
     
     it("supports a number (XT_ARRAY_DOUBLE)", function(done) {
