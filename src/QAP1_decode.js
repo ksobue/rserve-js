@@ -248,7 +248,11 @@ function decodeMessage(buffer) {
                         }
                         let nullPos = buffer.indexOf(0, pos);
                         let val = buffer.toString("utf8", pos, nullPos);
+                        if (nullPos - pos === 1 && buffer[pos] === 0xff) { // NA
+                            val = null;
+                        }
                         pos = nullPos + 1;
+                        
                         value.push(val);
                     }
                 }

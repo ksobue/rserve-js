@@ -52,6 +52,10 @@ describe("rserve-js-client", function() {
         evaluatesTo("c('hello', 'world')", {value: ["hello", "world"]}, done);
     });
     
+    it("supports texts (XT_ARRAY_STR)", function(done) {
+        evaluatesTo("c('hello', NA, 'world')", {value: ["hello", null, "world"]}, done);
+    });
+    
     it("supports boolean TRUE (XT_ARRAY_BOOL)", function(done) {
         evaluatesTo("TRUE", {value: [true]}, done);
     });
