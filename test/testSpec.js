@@ -16,8 +16,7 @@ describe("rserve-js-client", function() {
     function evaluatesTo(request, expectedResponse, done) {
         client.eval(request, function(err, response) {
             if (err) {
-                expect().fail(err);
-                return;
+                throw err;
             }
             
             expect(response).to.deep.equal(expectedResponse);
