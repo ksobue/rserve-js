@@ -8,4 +8,4 @@ node_js:
   - "stable"
 script:
   - npm test
-  - npm coveralls
+  - npm run coveralls
