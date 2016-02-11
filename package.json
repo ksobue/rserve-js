@@ -11,14 +11,17 @@
     "node": ">=4.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha && istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "dependencies": {
     "buffers": "^0.1.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.4.5"
+    "coveralls": "^2.11.6",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.4.5",
+    "mocha-lcov-reporter": "^1.0.0"
   },
   "author": "Koichiro Sobue (https://github.com/ksobue/)",
   "repository": {
