@@ -11,20 +11,19 @@
     "node": ">=4.0"
   },
   "scripts": {
-    "pretest": "R CMD Rserve --RS-enable-control",
-    "test": "jasmine",
-    "posttest": "node spec/posttest.js"
+    "test": "mocha"
   },
   "dependencies": {
     "buffers": "^0.1.1"
   },
   "devDependencies": {
-    "jasmine": "^2.4.1"
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
   },
   "author": "Koichiro Sobue (https://github.com/ksobue/)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/ksobue/rserve-js.git"
+    "type": "git",
+    "url": "https://github.com/ksobue/rserve-js.git"
   },
   "license": "MIT"
 }

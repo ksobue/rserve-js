@@ -1,11 +1,13 @@
-/*eslint-env jasmine*/
+/*eslint-env mocha*/
 "use strict";
+
+let expect = require("chai").expect;
+let Rserve = require("..");
 
 describe("rserve-js-client", function() {
     let client;
     
-    beforeAll(function(done) {
-        let Rserve = require("..");
+    before(function(done) {
         client = Rserve.connect("localhost", 6311, function() {
             done();
         });
@@ -14,11 +16,11 @@ describe("rserve-js-client", function() {
     function evaluatesTo(request, expectedResponse, done) {
         client.eval(request, function(err, response) {
             if (err) {
-                fail(err);
+                expect().fail(err);
                 return;
             }
             
-            expect(response).toEqual(expectedResponse);
+            expect(response).to.deep.equal(expectedResponse);
             done();
         });
     }
@@ -75,7 +77,7 @@ describe("rserve-js-client", function() {
         evaluatesTo("as.list(setNames(c(1,2), c('first', 'second')))", {value: [[1], [2]], attr: {names: ["first", "second"]}}, done);
     });
     
-    afterAll(function(){
+    after(function(){
         client.close();
     });
 });
