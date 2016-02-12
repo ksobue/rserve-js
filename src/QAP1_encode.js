@@ -75,7 +75,7 @@ function encodeMessage(msg) {
         case _.DT_STRING:
             {
                 let strVal = data.value;
-                buffers.push(new Buffer(strVal, "utf8"), new Buffer([0]));
+                buffers.push(new Buffer(strVal, "utf8"), new Buffer([0x00]));
             }
             break;
         case _.DT_BYTESTREAM:
@@ -181,7 +181,7 @@ function encodeMessage(msg) {
             case _.XT_SYMNAME:
                 {
                     let strVal = expr.value;
-                    buffers.push(new Buffer(strVal, "utf8"), new Buffer([0]));
+                    buffers.push(new Buffer(strVal, "utf8"), new Buffer([0x00]));
                 }
                 break;
             case _.XT_SYM:
@@ -274,7 +274,12 @@ function encodeMessage(msg) {
                     let arr = expr.value;
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
-                        buffers.push(new Buffer(val, "utf8"), new Buffer([0]));
+                        
+                        let buffer = Buffer.concat(new Buffer(val, "utf8"), new Buffer([0x00]));
+                        if (val === null) {
+                            buffer = new Buffer([0xff, 0x00]);
+                        }
+                        buffers.push(buffer);
                     }
                     while (buffers.length % 4 !== 0) {
                         buffers.push(new Buffer([0x01]));

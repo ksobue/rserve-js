@@ -77,7 +77,7 @@ function decodeMessage(buffer) {
             pos += 8;
             break;
         case _.DT_STRING:
-            let nullPos = buffer.indexOf(0, pos);
+            let nullPos = buffer.indexOf(0x00, pos);
             value = buffer.toString("utf8", pos, nullPos);
             pos = nullPos + 1;
             break;
@@ -155,7 +155,7 @@ function decodeMessage(buffer) {
             case _.XT_STR:
             case _.XT_SYMNAME:
                 {
-                    value = buffer.toString("utf8", pos, buffer.indexOf(0, pos));
+                    value = buffer.toString("utf8", pos, buffer.indexOf(0x00, pos));
                     pos += dataLength;
                 }
                 break;
@@ -246,7 +246,8 @@ function decodeMessage(buffer) {
                             pos++;
                             continue;
                         }
-                        let nullPos = buffer.indexOf(0, pos);
+                        
+                        let nullPos = buffer.indexOf(0x00, pos);
                         let val = buffer.toString("utf8", pos, nullPos);
                         if (nullPos - pos === 1 && buffer[pos] === 0xff) { // NA
                             val = null;
