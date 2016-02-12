@@ -88,8 +88,20 @@ describe("rserve-js-client", function() {
         evaluatesTo("list(c(1, 2), c('a', 'b'), c(TRUE, FALSE))", {value: [[1, 2], ["a", "b"], [true, false]]}, done);
     });
     
-    it ("supports XT_LIST_TAG", function(done) {
+    it ("supports list (XT_LIST_TAG)", function(done) {
         evaluatesTo("as.list(setNames(c(1,2), c('first', 'second')))", {value: [[1], [2]], attr: {names: ["first", "second"]}}, done);
+    });
+    
+    it ("supports matrix", function(done) {
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3)", {value: [1, 2, 3, 4, 5, 6], attr: {dim: [2, 3]}}, done);
+    });
+    
+    it ("supports matrix by row", function(done) {
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3, byrow=TRUE)", {value: [1, 4, 2, 5, 3, 6], attr: {dim: [2, 3]}}, done);
+    });
+    
+    it ("supports matrix with dimnames", function(done) {
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3, dimnames=list(c('r1', 'r2'), c('c1', 'c2', 'c3')))", {value: [1, 2, 3, 4, 5, 6], attr: {dim: [2, 3], dimnames: [["r1", "r2"], ["c1", "c2", "c3"]]}}, done);
     });
     
     after(function(){
