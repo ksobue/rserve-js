@@ -65,7 +65,6 @@ class RserveClient extends EventEmitter {
                     
                     if (readBuffers.length >= 16 + length) {
                         let buffer = readBuffers.splice(0, 16 + length).slice();
-                        
                         try {
                             let msg = decodeMessage(buffer);
                             if ((msg.command & _.RESP_OK) !== _.RESP_OK) {

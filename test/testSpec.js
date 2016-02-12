@@ -36,12 +36,24 @@ describe("rserve-js-client", function() {
         evaluatesTo("c(as.integer(1), as.integer(3))", {value: [1, 3]}, done);
     });
     
-    it("supports a number (XT_ARRAY_DOUBLE)", function(done) {
+    it("supports integers with NA (XT_ARRAY_INT)", function(done) {
+        evaluatesTo("c(as.integer(1), as.integer(NA), as.integer(3))", {value: [1, null, 3]}, done);
+    });
+    
+    it("supports a double (XT_ARRAY_DOUBLE)", function(done) {
         evaluatesTo("as.double(2)", {value: [2]}, done);
     });
     
-    it("supports numbers (XT_ARRAY_DOUBLE)", function(done) {
+    it("supports doubles (XT_ARRAY_DOUBLE)", function(done) {
         evaluatesTo("c(as.double(1), as.double(3))", {value: [1, 3]}, done);
+    });
+    
+    it("supports doubles with NA (XT_ARRAY_DOUBLE)", function(done) {
+        evaluatesTo("c(as.double(1), as.double(NA), as.double(3))", {value: [1, null, 3]}, done);
+    });
+    
+    it("supports doubles with NaN (XT_ARRAY_DOUBLE)", function(done) {
+        evaluatesTo("c(as.double(1), as.double(NaN), as.double(3))", {value: [1, NaN, 3]}, done);
     });
     
     it("supports a text (XT_ARRAY_STR)", function(done) {
@@ -52,7 +64,7 @@ describe("rserve-js-client", function() {
         evaluatesTo("c('hello', 'world')", {value: ["hello", "world"]}, done);
     });
     
-    it("supports texts (XT_ARRAY_STR)", function(done) {
+    it("supports texts with NA (XT_ARRAY_STR)", function(done) {
         evaluatesTo("c('hello', NA, 'world')", {value: ["hello", null, "world"]}, done);
     });
     
@@ -65,11 +77,11 @@ describe("rserve-js-client", function() {
     });
     
     it("supports boolean NA (XT_ARRAY_BOOL)", function(done) {
-        evaluatesTo("NA", {value: [undefined]}, done);
+        evaluatesTo("NA", {value: [null]}, done);
     });
     
     it("supports booleans (XT_ARRAY_BOOL)", function(done) {
-        evaluatesTo("c(TRUE, FALSE, NA)", {value: [true, false, undefined]}, done);
+        evaluatesTo("c(TRUE, FALSE, NA)", {value: [true, false, null]}, done);
     });
     
     it("supports vector (XT_VECTOR)", function(done) {

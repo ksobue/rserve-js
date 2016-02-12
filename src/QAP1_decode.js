@@ -11,13 +11,17 @@ function bool(byte) {
     } else if (byte === _.BOOL_FALSE) {
         value = false;
     } else if (byte === _.BOOL_NA) {
-        value = undefined;
+        value = null;
     } else {
         throw new Error("Unexpected boolean value. " + byte);
     }
     
     return value;
 }
+
+const INT_NA = new Buffer([0x80, 0x00, 0x00, 0x00].reverse());
+const DOUBLE_NA = new Buffer([0xa2, 0x07, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f]);
+const STR_NA = new Buffer([0xff, 0x00]);
 
 function decodeMessage(buffer) {
     let pos = 0;
@@ -224,6 +228,10 @@ function decodeMessage(buffer) {
                     for (let i = 0; i < dataLength / 4; i++) {
                         let val = buffer.readInt32LE(pos);
                         pos += 4;
+                        
+                        if (val === INT_NA.readInt32LE(0)) {
+                            val = null;
+                        }
                         value.push(val);
                     }
                 }
@@ -234,6 +242,11 @@ function decodeMessage(buffer) {
                     for (let i = 0; i < dataLength / 8; i++) {
                         let val = buffer.readDoubleLE(pos);
                         pos += 8;
+                        
+                        if (isNaN(val) && buffer.slice(pos - 8, pos).equals(DOUBLE_NA)) { // DOUBLE_NA.readDoubleLE() returns NaN
+                            val = null;
+                        }
+                        
                         value.push(val);
                     }
                 }
@@ -249,10 +262,11 @@ function decodeMessage(buffer) {
                         
                         let nullPos = buffer.indexOf(0x00, pos);
                         let val = buffer.toString("utf8", pos, nullPos);
-                        if (nullPos - pos === 1 && buffer[pos] === 0xff) { // NA
+                        pos = nullPos + 1;
+                        
+                        if (val === STR_NA.toString("utf8", 0, 1)) {
                             val = null;
                         }
-                        pos = nullPos + 1;
                         
                         value.push(val);
                     }
@@ -276,6 +290,7 @@ function decodeMessage(buffer) {
                     for (let i = 0; i < n; i++) {
                         let val = bool(buffer.readInt8(pos));
                         pos += 1;
+                        
                         value.push(val);
                     }
                 }

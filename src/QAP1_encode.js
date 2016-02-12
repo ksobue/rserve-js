@@ -19,6 +19,10 @@ function bool(value) {
     return byte;
 }
 
+const INT_NA = new Buffer([0x80, 0x00, 0x00, 0x00].reverse());
+const DOUBLE_NA = new Buffer([0xa2, 0x07, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f]);
+const STR_NA = new Buffer([0xff, 0x00]);
+
 function encodeMessage(msg) {
     let buffers = new Buffers();
     
@@ -253,7 +257,12 @@ function encodeMessage(msg) {
                     let buffer = new Buffer(4 * arr.length);
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
-                        buffer.writeInt32LE(val, 4 * i);
+                        
+                        if (val !== null) {
+                            buffer.writeInt32LE(val, 4 * i);
+                        } else {
+                            INT_NA.copy(buffer, 4 * 1);
+                        }
                     }
                     buffers.push(buffer);
                 }
@@ -264,7 +273,12 @@ function encodeMessage(msg) {
                     let buffer = new Buffer(8 * arr.length);
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
-                        buffer.writeDoubleLE(val, 8 * i);
+                        
+                        if (val !== null) {
+                            buffer.writeDoubleLE(val, 8 * i);
+                        } else {
+                            DOUBLE_NA.copy(buffer, 8 * i);
+                        }
                     }
                     buffers.push(buffer);
                 }
@@ -275,9 +289,11 @@ function encodeMessage(msg) {
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
                         
-                        let buffer = Buffer.concat(new Buffer(val, "utf8"), new Buffer([0x00]));
-                        if (val === null) {
-                            buffer = new Buffer([0xff, 0x00]);
+                        let buffer;
+                        if (val !== null) {
+                            buffer = Buffer.concat(new Buffer(val, "utf8"), new Buffer([0x00]));
+                        } else {
+                            buffer = new Buffer(STR_NA);
                         }
                         buffers.push(buffer);
                     }
