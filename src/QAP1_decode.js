@@ -133,7 +133,7 @@ function decodeMessage(buffer) {
             let eoa = pos + length;
             
             if (_.HAS_ATTR(type)) {
-                attr = decodeSEXP(buffer).value;
+                attr = decodeSEXP(buffer);
             }
             
             let dataLength = eoa - pos; // without attribute
@@ -197,17 +197,17 @@ function decodeMessage(buffer) {
             case _.XT_LANG:
                 {
                     value = {
-                        head: decodeSEXP(buffer).value,
-                        vals: decodeSEXP(buffer).value,
-                        tag: decodeSEXP(buffer).value
+                        head: decodeSEXP(buffer),
+                        vals: decodeSEXP(buffer),
+                        tag: decodeSEXP(buffer)
                     };
                 }
                 break;
             case _.XT_CLOS:
                 {
                     value = {
-                        formals: decodeSEXP(buffer).value,
-                        body: decodeSEXP(buffer).value
+                        formals: decodeSEXP(buffer),
+                        body: decodeSEXP(buffer)
                     };
                 }
                 break;
@@ -216,8 +216,8 @@ function decodeMessage(buffer) {
                 {
                     value = {};
                     while (pos < eoa) {
-                        let val = decodeSEXP(buffer).value;
-                        let tag = decodeSEXP(buffer).value;
+                        let val = decodeSEXP(buffer);
+                        let tag = decodeSEXP(buffer);
                         value[tag] = val;
                     }
                 }
@@ -334,14 +334,14 @@ function decodeMessage(buffer) {
                 pos++;
             }
             
-            let expr = {
-                value: value
-            };
             if (attr !== undefined) {
-                expr.attr = attr;
+                Object.defineProperty(value, "attr", {
+                    enumerable: true,
+                    value: attr
+                });
             }
             
-            return expr;
+            return value;
         }
     }
 }
