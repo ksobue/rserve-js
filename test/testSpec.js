@@ -103,20 +103,47 @@ describe("rserve-js-client", function() {
     });
     
     it ("supports list (XT_LIST_TAG)", function(done) {
-        evaluatesTo("as.list(setNames(c(1,2), c('first', 'second')))", [attr([[1], [2]], {names: ["first", "second"]})], done);
+        evaluatesTo("as.list(setNames(c(1,2), c('first', 'second')))", [
+            attr(
+                [[1], [2]],
+                {
+                    names: ["first", "second"]
+                }
+            )
+        ], done);
     });
     
     it ("supports matrix", function(done) {
-        evaluatesTo("matrix(1:6, nrow=2, ncol=3)", [attr([1, 2, 3, 4, 5, 6], {dim: [2, 3]})], done);
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3)", [
+            attr(
+                [1, 2, 3, 4, 5, 6],
+                {
+                    dim: [2, 3]
+                }
+            )
+        ], done);
     });
     
     it ("supports matrix by row", function(done) {
-        evaluatesTo("matrix(1:6, nrow=2, ncol=3, byrow=TRUE)", [attr([1, 4, 2, 5, 3, 6], {dim: [2, 3]})], done);
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3, byrow=TRUE)", [
+            attr(
+                [1, 4, 2, 5, 3, 6],
+                {
+                    dim: [2, 3]
+                }
+            )
+        ], done);
     });
     
     it ("supports matrix with dimnames", function(done) {
         evaluatesTo("matrix(1:6, nrow=2, ncol=3, dimnames=list(c('r1', 'r2'), c('c1', 'c2', 'c3')))", [
-            attr([1, 2, 3, 4, 5, 6], {dim: [2, 3], dimnames: [["r1", "r2"], ["c1", "c2", "c3"]]})
+            attr(
+                [1, 2, 3, 4, 5, 6],
+                {
+                    dim: [2, 3],
+                    dimnames: [["r1", "r2"], ["c1", "c2", "c3"]]
+                }
+            )
         ], done);
     });
     
@@ -135,8 +162,8 @@ describe("rserve-js-client", function() {
                     [true, false]
                 ],
                 {
-                    names: ["c.1..2.","c..red....white..","c.TRUE..FALSE."],
-                    "row.names": [null,-2],
+                    names: ["c.1..2.", "c..red....white..", "c.TRUE..FALSE."],
+                    "row.names": [null, -2], // see line 239 in REXP.java
                     class: ["data.frame"]
                 }
             )
