@@ -108,7 +108,7 @@ class RserveClient extends EventEmitter {
                 return;
             }
                 
-            cb(null, msg.params[0]);
+            cb(null, msg.params);
         });
     }
 

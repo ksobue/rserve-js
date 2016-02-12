@@ -188,7 +188,7 @@ function decodeMessage(buffer) {
                 {
                     value = [];
                     while (pos < eoa) {
-                        let val = decodeSEXP(buffer).value;
+                        let val = decodeSEXP(buffer);
                         value.push(val);
                     }
                 }

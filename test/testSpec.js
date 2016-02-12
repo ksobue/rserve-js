@@ -25,83 +25,227 @@ describe("rserve-js-client", function() {
     }
     
     it("supports null (XT_NULL)", function(done) {
-        evaluatesTo("NULL", {value: null}, done);
+        evaluatesTo("NULL", [
+            {
+                value: null
+            }
+        ], done);
     });
     
     it("supports an integer (XT_ARRAY_INT)", function(done) {
-        evaluatesTo("as.integer(2)", {value: [2]}, done);
+        evaluatesTo("as.integer(2)", [
+            {
+                value: [2]
+            }
+        ], done);
     });
     
     it("supports integers (XT_ARRAY_INT)", function(done) {
-        evaluatesTo("c(as.integer(1), as.integer(3))", {value: [1, 3]}, done);
+        evaluatesTo("c(as.integer(1), as.integer(3))", [
+            {
+                value: [1, 3]
+            }
+        ], done);
     });
     
     it("supports integers with NA (XT_ARRAY_INT)", function(done) {
-        evaluatesTo("c(as.integer(1), as.integer(NA), as.integer(3))", {value: [1, null, 3]}, done);
+        evaluatesTo("c(as.integer(1), as.integer(NA), as.integer(3))", [
+            {
+                value: [1, null, 3]
+            }
+        ], done);
     });
     
     it("supports a double (XT_ARRAY_DOUBLE)", function(done) {
-        evaluatesTo("as.double(2)", {value: [2]}, done);
+        evaluatesTo("as.double(2)", [
+            {
+                value: [2]
+            }
+        ], done);
     });
     
     it("supports doubles (XT_ARRAY_DOUBLE)", function(done) {
-        evaluatesTo("c(as.double(1), as.double(3))", {value: [1, 3]}, done);
+        evaluatesTo("c(as.double(1), as.double(3))", [
+            {
+                value: [1, 3]
+            }
+        ], done);
     });
     
     it("supports doubles with NA (XT_ARRAY_DOUBLE)", function(done) {
-        evaluatesTo("c(as.double(1), as.double(NA), as.double(3))", {value: [1, null, 3]}, done);
+        evaluatesTo("c(as.double(1), as.double(NA), as.double(3))", [
+            {
+                value: [1, null, 3]
+            }
+        ], done);
     });
     
     it("supports doubles with NaN (XT_ARRAY_DOUBLE)", function(done) {
-        evaluatesTo("c(as.double(1), as.double(NaN), as.double(3))", {value: [1, NaN, 3]}, done);
+        evaluatesTo("c(as.double(1), as.double(NaN), as.double(3))", [
+            {
+                value: [1, NaN, 3]
+            }
+        ], done);
     });
     
     it("supports a text (XT_ARRAY_STR)", function(done) {
-        evaluatesTo("'hello'", {value: ["hello"]}, done);
+        evaluatesTo("'hello'", [
+            {
+                value: ["hello"]
+            }
+        ], done);
     });
     
     it("supports texts (XT_ARRAY_STR)", function(done) {
-        evaluatesTo("c('hello', 'world')", {value: ["hello", "world"]}, done);
+        evaluatesTo("c('hello', 'world')", [
+            {
+                value: ["hello", "world"]
+            }
+        ], done);
     });
     
     it("supports texts with NA (XT_ARRAY_STR)", function(done) {
-        evaluatesTo("c('hello', NA, 'world')", {value: ["hello", null, "world"]}, done);
+        evaluatesTo("c('hello', NA, 'world')", [
+            {
+                value: ["hello", null, "world"]
+            }
+        ], done);
     });
     
     it("supports boolean TRUE (XT_ARRAY_BOOL)", function(done) {
-        evaluatesTo("TRUE", {value: [true]}, done);
+        evaluatesTo("TRUE", [
+            {
+                value: [true]
+            }
+        ], done);
     });
     
     it("supports boolean FALSE (XT_ARRAY_BOOL)", function(done) {
-        evaluatesTo("FALSE", {value: [false]}, done);
+        evaluatesTo("FALSE", [
+            {
+                value: [false]
+            }
+        ], done);
     });
     
     it("supports boolean NA (XT_ARRAY_BOOL)", function(done) {
-        evaluatesTo("NA", {value: [null]}, done);
+        evaluatesTo("NA", [
+            {
+                value: [null]
+            }
+        ], done);
     });
     
     it("supports booleans (XT_ARRAY_BOOL)", function(done) {
-        evaluatesTo("c(TRUE, FALSE, NA)", {value: [true, false, null]}, done);
+        evaluatesTo("c(TRUE, FALSE, NA)", [
+            {
+                value: [true, false, null]
+            }
+        ], done);
     });
     
     it("supports vector (XT_VECTOR)", function(done) {
-        evaluatesTo("list(c(1, 2), c('a', 'b'), c(TRUE, FALSE))", {value: [[1, 2], ["a", "b"], [true, false]]}, done);
+        evaluatesTo("list(c(1, 2), c('a', 'b'), c(TRUE, FALSE))", [
+            {
+                value: [
+                    {
+                        value: [1, 2]
+                    },
+                    {
+                        value: ["a", "b"]
+                    },
+                    {
+                        value: [true, false]
+                    }
+                ]
+            }
+        ], done);
     });
     
     it ("supports list (XT_LIST_TAG)", function(done) {
-        evaluatesTo("as.list(setNames(c(1,2), c('first', 'second')))", {value: [[1], [2]], attr: {names: ["first", "second"]}}, done);
+        evaluatesTo("as.list(setNames(c(1,2), c('first', 'second')))", [
+            {
+                value: [
+                    {
+                        value: [1]
+                    },
+                    {
+                        value: [2]
+                    }
+                ],
+                attr: {
+                    names: ["first", "second"]
+                }
+            }
+        ], done);
     });
     
     it ("supports matrix", function(done) {
-        evaluatesTo("matrix(1:6, nrow=2, ncol=3)", {value: [1, 2, 3, 4, 5, 6], attr: {dim: [2, 3]}}, done);
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3)", [
+            {
+                value: [1, 2, 3, 4, 5, 6],
+                attr: {
+                    dim: [2, 3]
+                }
+            }
+        ], done);
     });
     
     it ("supports matrix by row", function(done) {
-        evaluatesTo("matrix(1:6, nrow=2, ncol=3, byrow=TRUE)", {value: [1, 4, 2, 5, 3, 6], attr: {dim: [2, 3]}}, done);
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3, byrow=TRUE)", [
+            {
+                value: [1, 4, 2, 5, 3, 6],
+                attr: {
+                    dim: [2, 3]
+                }
+            }
+        ], done);
     });
     
     it ("supports matrix with dimnames", function(done) {
-        evaluatesTo("matrix(1:6, nrow=2, ncol=3, dimnames=list(c('r1', 'r2'), c('c1', 'c2', 'c3')))", {value: [1, 2, 3, 4, 5, 6], attr: {dim: [2, 3], dimnames: [["r1", "r2"], ["c1", "c2", "c3"]]}}, done);
+        evaluatesTo("matrix(1:6, nrow=2, ncol=3, dimnames=list(c('r1', 'r2'), c('c1', 'c2', 'c3')))", [
+            {
+                value: [1, 2, 3, 4, 5, 6],
+                attr: {
+                    dim: [2, 3],
+                    dimnames: [
+                        {
+                            value: ["r1", "r2"]
+                        },
+                        {
+                            value: ["c1", "c2", "c3"]
+                        }
+                    ]
+                }
+            }
+        ], done);
+    });
+    
+    it ("supports dataframe", function(done) {
+        evaluatesTo("data.frame(c(1, 2), c('red', 'white'), c(TRUE, FALSE))", [
+            {
+                value: [
+                    {
+                        value: [1, 2]
+                    },
+                    {
+                        value: [1, 2],
+                        attr: {
+                            levels: ["red", "white"],
+                            class: ["factor"]
+                        }
+                    },
+                    {
+                        value: [true, false]
+                    }
+                ],
+                attr: {
+                    names: ["c.1..2.","c..red....white..","c.TRUE..FALSE."],
+                    "row.names": [null,-2],
+                    class: ["data.frame"]
+                }
+            }
+        ], done);
     });
     
     after(function(){
