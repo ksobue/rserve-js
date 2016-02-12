@@ -113,6 +113,30 @@ describe("rserve-js-client", function() {
         ], done);
     });
     
+    it ("supports function (XT_CLOS)", function(done) {
+        evaluatesTo("function(a, b) { a + b }", [
+            {
+                formals: {
+                    a: "",
+                    b: ""
+                },
+                body: ["{", ["+", "a", "b"]]
+            }
+        ], done);
+    });
+    
+    it ("supports function with default parameters (XT_CLOS)", function(done) {
+        evaluatesTo("function(a = 'hello', b = 2) { rep(a, b) }", [
+            {
+                formals: {
+                    a: ["hello"],
+                    b: [2]
+                },
+                body: ["{", ["rep", "a", "b"]]
+            }
+        ], done);
+    });
+    
     it ("supports matrix", function(done) {
         evaluatesTo("matrix(1:6, nrow=2, ncol=3)", [
             attr(
