@@ -53,9 +53,9 @@ class RserveClient extends EventEmitter {
             handler = function() {
                 if (readBuffers.length >= 16) {
                     let headerBuffer = readBuffers.slice(0, 16);
-                    let command = headerBuffer.readInt32LE(0);
+                    let _command = headerBuffer.readInt32LE(0);
                     let length_0_31 = headerBuffer.readInt32LE(4);
-                    let messageId = headerBuffer.readInt32LE(8);
+                    let _messageId = headerBuffer.readInt32LE(8);
                     let length_32_63 = headerBuffer.readInt32LE(12);
                     
                     let length = length_32_63 * Math.pow(2, 32) + length_0_31;
@@ -108,7 +108,7 @@ class RserveClient extends EventEmitter {
                 return;
             }
                 
-            cb(null, msg.params);
+            cb(null, msg.params[0]);
         });
     }
 
