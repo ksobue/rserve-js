@@ -315,7 +315,15 @@ function decodeMessage(buffer) {
                         pos += 8;
                         let im = buffer.readDoubleLE(pos);
                         pos += 8;
-                        value.push([re, im]);
+                        
+                        let val = [re, im];
+                        
+                        if (isNaN(re) && buffer.slice(pos - 16, pos - 8).equals(DOUBLE_NA) &&
+                            isNaN(im) && buffer.slice(pos - 8, pos).equals(DOUBLE_NA)) {
+                            val = null;
+                        }
+                        
+                        value.push(val);
                     }
                 }
                 break;
