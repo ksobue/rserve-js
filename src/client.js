@@ -33,7 +33,11 @@ class RserveClient extends EventEmitter {
                 let idString = readBuffers.splice(0,32);
                 try {
                     this.info = decodeServerCapability(idString);
-                    this.emit("connect");
+                    
+                    let loginRequired = this.info.some(function(info) {
+                        return info.startsWith("AR");
+                    });
+                    this.emit("connect", loginRequired);
                 } catch (err) {
                     this.emit("error", err);
                 }
@@ -70,6 +74,7 @@ class RserveClient extends EventEmitter {
                             if ((msg.command & _.RESP_OK) !== _.RESP_OK) {
                                 let statusCode = _.CMD_STAT(msg.command);
                                 cb(new Error(errorMessage(statusCode)), msg.params);
+                                return;
                             }
                             
                             cb(null, msg);
@@ -86,8 +91,40 @@ class RserveClient extends EventEmitter {
         };
     }
     
-    login(_name, _pswd) {
+    login(name, pswd, cb) {
+        let auth;
+        if (this.info.indexOf("ARpt") !== -1) { // plain text
+            auth = name + "\n" + pswd;
+        } else if (this.info.indexOf("ARuc") !== -1) { // unix crypt
+            let key = this.info.filter(function(info) {
+                info.startsWith("K");
+            })[0];
+            if (key === undefined) {
+                cb(new Error("Key for unix crypt is unavailable."));
+                return;
+            }
+            
+            // TODO: implement unix crypt.
+        } else {
+            cb(new Error("Unsupported authentication method."));
+            return;
+        }
         
+        this.sendMessage({
+            command: _.CMD_login,
+            params: [{
+                type: _.DT_STRING,
+                value: auth
+            }]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+                
+            cb(null);
+        });
     }
 
     voidEval(_name, _pswd) {
@@ -126,13 +163,13 @@ class RserveClient extends EventEmitter {
             command: _.CMD_shutdown,
             params: params
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
                 return;
             }
                 
-            cb(null, msg.params);
+            cb(null);
         });
     }
 
@@ -213,13 +250,13 @@ class RserveClient extends EventEmitter {
             command: _.CMD_ctrlShutdown,
             params: []
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
                 return;
             }
                 
-            cb(null, msg.params);
+            cb(null);
         });
     }
 
@@ -234,14 +271,10 @@ function decodeServerCapability(buffer) {
     let attrs = [];
     for (let i = 0; i < buffer.length; i+= 4) {
         let attr = buffer.toString("utf8", i, i + 4);
-        
-        if (attr === "\r\n\r\n") {
-            break;
-        }
-        
         attr = attr.replace(/\r\n/g, "").replace(/\-/g, "");
-        
-        attrs.push(attr);
+        if (attr !== "") {
+            attrs.push(attr);
+        }
     }
     
     let idSignature = attrs[0];

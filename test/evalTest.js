@@ -1,15 +1,23 @@
 /*eslint-env mocha*/
 "use strict";
 
-let expect = require("chai").expect;
-let Rserve = require("..");
+const spawn = require("child_process").spawn;
+const expect = require("chai").expect;
+const Rserve = require("..");
 
-describe("rserve-js-client", function() {
+describe("rserve-js's eval command", function() {
     let client;
     
     before(function(done) {
-        client = Rserve.connect("localhost", 6311, function() {
-            done();
+        let options = [
+            "--RS-port",    6313
+        ];
+        let proc = spawn("R", ["CMD", "Rserve", "--vanilla"].concat(options), {stdio: "ignore"});
+        proc.on("exit", function() {
+            // R command spawns Rserve process and exit.
+            client = Rserve.connect("localhost", 6313, function() {
+                done();
+            });
         });
     });
     
@@ -220,7 +228,15 @@ describe("rserve-js-client", function() {
         );
     });
     
-    after(function(){
-        client.close();
+    
+    after(function(done) {
+        client.shutdown(null, function(err) {
+            if (err) {
+                throw err;
+            }
+            
+            client.close();
+            done();
+        });
     });
 });
