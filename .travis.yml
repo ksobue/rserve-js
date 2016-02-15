@@ -5,6 +5,7 @@ before_install:
   - sudo apt-get install -qq r-cran-rserve
   - R CMD Rserve --version
   - R --version
+  - cat /etc/apt/sources.list
 node_js:
   - "4.0"
   - "stable"
