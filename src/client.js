@@ -4,6 +4,7 @@
 let EventEmitter = require("events");
 let net = require("net");
 let Buffers = require("buffers");
+let crypt = require("crypt3");
 
 let _ = require("./Rsrv");
 let decodeMessage = require("./QAP1_decode");
@@ -93,18 +94,21 @@ class RserveClient extends EventEmitter {
     
     login(name, pswd, cb) {
         let auth;
-        if (this.info.indexOf("ARpt") !== -1) { // plain text
-            auth = name + "\n" + pswd;
-        } else if (this.info.indexOf("ARuc") !== -1) { // unix crypt
+        if (this.info.indexOf("ARuc") !== -1) { // unix crypt
             let key = this.info.filter(function(info) {
-                info.startsWith("K");
+                return info.startsWith("K");
             })[0];
             if (key === undefined) {
-                cb(new Error("Key for unix crypt is unavailable."));
+                cb(new Error("Key for unix crypt was not provided."));
                 return;
             }
             
-            // TODO: implement unix crypt.
+            let salt = key.substring(1, 3);
+            auth = crypt(pswd, salt);
+            
+        } else if (this.info.indexOf("ARpt") !== -1) { // plain text
+            auth = pswd;
+            
         } else {
             cb(new Error("Unsupported authentication method."));
             return;
@@ -114,7 +118,7 @@ class RserveClient extends EventEmitter {
             command: _.CMD_login,
             params: [{
                 type: _.DT_STRING,
-                value: auth
+                value: name + "\n" + auth
             }]
         },
         function(err, _msg) {

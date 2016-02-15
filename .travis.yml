@@ -11,6 +11,7 @@ before_install:
   # 3.2.3 at the time of this writing.
   #
   # Rserve version in R mirror server is old.
+  # (SSL certificate for rforge.net has been expired since 2/11/2016. Remove --no-check-certificate option once updated)
   - wget --no-check-certificate https://rforge.net/Rserve/snapshot/Rserve_1.8-5.tar.gz
   - sudo R CMD INSTALL Rserve_1.8-5.tar.gz
   - R CMD Rserve --version
