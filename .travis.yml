@@ -1,6 +1,6 @@
 language: node_js
 before_install:
-  - sudo add-apt-repository http://cran.cnr.berkeley.edu/bin/linux/ubuntu/precise/
+  - sudo add-apt-repository http://cran.cnr.berkeley.edu/bin/linux/ubuntu precise/
   - cat /etc/apt/sources.list
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
