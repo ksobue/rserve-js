@@ -1,6 +1,6 @@
 language: node_js
 before_install:
-  - echo "deb https://cran.cnr.berkeley.edu/bin/linux/ubuntu/precise/" >> /etc/apt/sources.list
+  - sudo echo "deb https://cran.cnr.berkeley.edu/bin/linux/ubuntu/precise/" >> /etc/apt/sources.list
   - cat /etc/apt/sources.list
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
