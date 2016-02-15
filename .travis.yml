@@ -1,11 +1,12 @@
 language: node_js
 before_install:
+  - echo "https://cran.cnr.berkeley.edu/bin/linux/ubuntu/precise/" >> /etc/apt/sources.list
+  - cat /etc/apt/sources.list
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
   - sudo apt-get install -qq r-cran-rserve
   - R CMD Rserve --version
   - R --version
-  - cat /etc/apt/sources.list
 node_js:
   - "4.0"
   - "stable"
