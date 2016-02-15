@@ -23,10 +23,7 @@ describe("rserve-js's eval command", function() {
     
     function evaluatesTo(request, expectedResponse, done) {
         client.eval(request, function(err, response) {
-            if (err) {
-                throw err;
-            }
-            
+            expect(err).to.be.null;
             expect(response).to.deep.equal(expectedResponse);
             done();
         });
