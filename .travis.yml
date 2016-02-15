@@ -1,18 +1,22 @@
 language: node_js
 before_install:
+  # R version installed by default apt-get is old. Use R mirror server instead.
   # http://askubuntu.com/questions/218708/installing-latest-version-of-r-base
   - echo "deb http://cran.cnr.berkeley.edu/bin/linux/ubuntu precise/" | sudo tee -a /etc/apt/sources.list
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
   - sudo add-apt-repository -y ppa:marutter/rdev
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
+  - R --version
+  # 3.2.3 at the time of this writing.
+  #
+  # Rserve version in R mirror server is old.
   - wget --no-check-certificate https://rforge.net/Rserve/snapshot/Rserve_1.8-5.tar.gz
   - sudo R CMD INSTALL Rserve_1.8-5.tar.gz
-  # sudo apt-get install -qq r-cran-rserve
   - R CMD Rserve --version
-  - R --version
+  # 1.8.5 at the time of this writing.
 node_js:
-  - "4.0"
+  - "5.6"
   - "stable"
 script:
   - npm test

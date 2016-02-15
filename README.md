@@ -30,5 +30,8 @@ This node module will communicate with R/Rserve over TCP/IP socket, allowing use
         });
     });
 
+## Test
+Tested on R version 3.2.3 and Rserve version 1.8.5.
+
 ## License
 MIT
