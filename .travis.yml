@@ -3,6 +3,8 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq r-base
   - sudo apt-get install -qq r-cran-rserve
+  - R CMD Rserve --version
+  - R --version
 node_js:
   - "4.0"
   - "stable"
