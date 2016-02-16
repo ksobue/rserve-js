@@ -41,16 +41,23 @@ describe("rserve-js", function() {
         client.openFile(__dirname + "/test.txt", function(err) {
             expect(err).to.be.null;
             
-            client.readFile(null, function(err, buffer) {
+            client.readFile(8, function(err, buffer) {
                 expect(err).to.be.null;
                 
                 let text = buffer.toString("utf8");
-                expect(text).to.equal("written by file test");
+                expect(text).to.equal("written ");
                 
-                client.closeFile(function(err3) {
-                    expect(err3).to.be.null;
+                client.readFile(null, function(err, buffer) {
+                    expect(err).to.be.null;
                     
-                    done();
+                    let text = buffer.toString("utf8");
+                    expect(text).to.equal("by file test");
+                    
+                    client.closeFile(function(err3) {
+                        expect(err3).to.be.null;
+                        
+                        done();
+                    });
                 });
             });
         });
