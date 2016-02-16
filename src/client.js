@@ -121,18 +121,42 @@ class RserveClient extends EventEmitter {
                 value: name + "\n" + auth
             }]
         },
-        function(err, _msg) {
+        function(err, msg) {
             if (err) {
                 cb(err);
                 return;
             }
-                
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
             cb(null);
         });
     }
 
-    voidEval(_name, _pswd) {
-        
+    voidEval(str, cb) {
+        this.sendMessage({
+            command: _.CMD_voidEval,
+            params: [{
+                type: _.DT_STRING,
+                value: str
+            }]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
     eval(str, cb) {
@@ -148,7 +172,12 @@ class RserveClient extends EventEmitter {
                 cb(err);
                 return;
             }
-                
+            
+            if (msg.params.length > 1) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
             cb(null, msg.params[0]);
         });
     }
