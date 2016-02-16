@@ -2,8 +2,8 @@
 "use strict";
 
 const spawn = require("child_process").spawn;
-const Rserve = require("..");
 const expect = require("chai").expect;
+const Rserve = require("..");
 
 describe("rserve-js's login command", function() {
     

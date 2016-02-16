@@ -70,6 +70,22 @@ class RserveClient extends EventEmitter {
                     
                     if (readBuffers.length >= 16 + length) {
                         let buffer = readBuffers.splice(0, 16 + length).slice();
+                        
+                        // Rserve bug: CMD_readFile response is not encoded as DT_bytestream
+                        // https://github.com/s-u/Rserve/issues/15
+                        if (msg.command === _.CMD_readFile) {
+                            let fixedBuffer = new Buffer(buffer.length + 1 + 3);
+                            // header with correct message size
+                            buffer.copy(fixedBuffer, 0, 0, 16);
+                            fixedBuffer.writeInt32LE(fixedBuffer.length - 16, 4);
+                            // param header which was missing
+                            fixedBuffer.writeInt8(_.DT_BYTESTREAM, 16);
+                            fixedBuffer.writeIntLE(buffer.length - 16, 16 + 1, 3);
+                            // param data (byte array)
+                            buffer.copy(fixedBuffer, 16 + 1 + 3, 16);
+                            buffer = fixedBuffer;
+                        }
+                        
                         try {
                             let msg = decodeMessage(buffer);
                             if ((msg.command & _.RESP_OK) !== _.RESP_OK) {
@@ -226,28 +242,145 @@ class RserveClient extends EventEmitter {
         
     }
 
-    openFile(_fn) {
-        
+    openFile(fileName, cb) {
+        this.sendMessage({
+            command: _.CMD_openFile,
+            params: [{
+                type: _.DT_STRING,
+                value: fileName
+            }]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    createFile(_fn) {
-        
+    createFile(fileName, cb) {
+        this.sendMessage({
+            command: _.CMD_createFile,
+            params: [{
+                type: _.DT_STRING,
+                value: fileName
+            }]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    closeFile() {
-        
+    closeFile(cb) {
+        this.sendMessage({
+            command: _.CMD_closeFile,
+            params: []
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    readFile(_size, _data) {
+    readFile(size, cb) {
+        let params = [];
         
+        if (size !== null) {
+            params.push({
+                type: _.DT_INT,
+                value: size
+            });
+        }
+        
+        this.sendMessage({
+            command: _.CMD_readFile,
+            params: params
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length > 1) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null, msg.params[0]);
+        });
     }
 
-    writeFile(_data) {
-        
+    writeFile(buffer, cb) {
+        this.sendMessage({
+            command: _.CMD_writeFile,
+            params: [{
+                type: _.DT_BYTESTREAM,
+                value: buffer
+            }]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    removeFile(_fn) {
-        
+    removeFile(fileName, cb) {
+        this.sendMessage({
+            command: _.CMD_removeFile,
+            params: [{
+                type: _.DT_STRING,
+                value: fileName
+            }]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
     setSEXP(_name, _sexp) {
