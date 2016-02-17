@@ -51,8 +51,8 @@ class RserveClient extends EventEmitter {
             handler();
         });
         
-        this.sendMessage = function(msg, cb) {
-            let writeBuffer = encodeMessage(msg);
+        this.sendMessage = function(req, cb) {
+            let writeBuffer = encodeMessage(req);
             client.write(writeBuffer);
             
             handler = function() {
@@ -73,7 +73,7 @@ class RserveClient extends EventEmitter {
                         
                         // Rserve bug: CMD_readFile response is not encoded as DT_bytestream
                         // https://github.com/s-u/Rserve/issues/15
-                        if (msg.command === _.CMD_readFile) {
+                        if (req.command === _.CMD_readFile) {
                             let fixedBuffer = new Buffer(buffer.length + 1 + 3);
                             // header with correct message size
                             buffer.copy(fixedBuffer, 0, 0, 16);
@@ -85,19 +85,14 @@ class RserveClient extends EventEmitter {
                             buffer.copy(fixedBuffer, 16 + 1 + 3, 16);
                             buffer = fixedBuffer;
                         }
-                        
-                        try {
-                            let msg = decodeMessage(buffer);
-                            if ((msg.command & _.RESP_OK) !== _.RESP_OK) {
-                                let statusCode = _.CMD_STAT(msg.command);
-                                cb(new Error(errorMessage(statusCode)), msg.params);
-                                return;
-                            }
-                            
-                            cb(null, msg);
-                        } catch (err) {
-                            cb(new Error("Could not decode message from Rserve. \n" + err));
+                        let resp = decodeMessage(buffer);
+                        if ((resp.command & _.RESP_OK) !== _.RESP_OK) {
+                            let statusCode = _.CMD_STAT(resp.command);
+                            cb(new Error(errorMessage(statusCode)), resp.params);
+                            return;
                         }
+                        
+                        cb(null, resp);
                     }
                 }
             };
@@ -383,12 +378,62 @@ class RserveClient extends EventEmitter {
         });
     }
 
-    setSEXP(_name, _sexp) {
-        
+    setSEXP(name, sexp, cb) {
+        this.sendMessage({
+            command: _.CMD_setSEXP,
+            params: [
+                {
+                    type: _.DT_STRING,
+                    value: name
+                },
+                {
+                    type: _.DT_SEXP,
+                    value: sexp
+                }
+            ]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    assignSEXP(_name, _sexp) {
-        
+    assignSEXP(name, sexp, cb) {
+        this.sendMessage({
+            command: _.CMD_assignSEXP,
+            params: [
+                {
+                    type: _.DT_STRING,
+                    value: name
+                },
+                {
+                    type: _.DT_SEXP,
+                    value: sexp
+                }
+            ]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            if (msg.params.length !== 0) {
+                cb(new Error("Unexpected response. " + msg.params));
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
     detachSession(_sessionKey) {

@@ -121,6 +121,12 @@ function encodeMessage(msg) {
             throw new Error("Unknown data type: " + data.type);
         }
         
+        if (buffers.length % 4 !== 0) {
+            let pad = new Buffer(4 - buffers.length % 4);
+            pad.fill(0);
+            buffers.push(pad);
+        }
+        
         let length = buffers.length;
         let length2 = 0;
         if (length > Math.pow(2, 24)) {
@@ -141,12 +147,6 @@ function encodeMessage(msg) {
         }
         buffers.unshift(headerBuffer);
         
-        if (buffers.length % 4 !== 0) {
-            let pad = new Buffer(4 - buffers.length % 4);
-            pad.fill(0);
-            buffers.push(pad);
-        }
-        
         return buffers.toBuffer();
         
         
@@ -161,7 +161,7 @@ function encodeMessage(msg) {
             switch (expr.type) {
             case _.XT_NULL:
                 {
-                    let buffer = new Buffer();
+                    let buffer = new Buffer(0);
                     buffers.push(buffer);
                 }
                 break;
@@ -291,7 +291,7 @@ function encodeMessage(msg) {
                         
                         let buffer;
                         if (val !== null) {
-                            buffer = Buffer.concat(new Buffer(val, "utf8"), new Buffer([0x00]));
+                            buffer = Buffer.concat([new Buffer(val, "utf8"), new Buffer([0x00])]);
                         } else {
                             buffer = new Buffer(STR_NA);
                         }
@@ -358,6 +358,12 @@ function encodeMessage(msg) {
                 throw new Error("Unknown expression type: " + expr.type);
             }
             
+            if (buffers.length % 4 !== 0) {
+                let pad = new Buffer(4 - buffers.length % 4);
+                pad.fill(0);
+                buffers.push(pad);
+            }
+            
             let length = buffers.length;
             let length2 = 0;
             if (length > Math.pow(2, 24)) {
@@ -380,12 +386,6 @@ function encodeMessage(msg) {
                 headerBuffer.writeInt32LE(length2, 4);
             }
             buffers.unshift(headerBuffer);
-            
-            if (buffers.length % 4 !== 0) {
-                let pad = new Buffer(4 - buffers.length % 4);
-                pad.fill(0);
-                buffers.push(pad);
-            }
             
             return buffers.toBuffer();
         }
