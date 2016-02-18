@@ -10,7 +10,7 @@ function bool(value) {
         byte = _.BOOL_TRUE;
     } else if (value === false) {
         byte = _.BOOL_FALSE;
-    } else if (value === undefined) {
+    } else if (value === null) {
         byte = _.BOOL_NA;
     } else {
         throw new Error("Unexpected boolean value. " + value);
@@ -46,7 +46,7 @@ function encodeMessage(msg) {
     headerBuffer.writeInt32LE(length_32_63, 12);
     buffers.unshift(headerBuffer);
     
-    return buffers.toString();
+    return buffers.toBuffer();
     
     function encodeData(data) {
         let buffers = new Buffers();
@@ -243,8 +243,9 @@ function encodeMessage(msg) {
             case _.XT_LANG_TAG:
                 {
                     let listTag = expr.value;
-                    for (let tag in listTag) {
-                        let val = listTag[tag];
+                    for (let i = 0; i < listTag.length; i += 2) {
+                        let val = listTag[i];
+                        let tag = listTag[i + 1];
                         let valBuffer = encodeSEXP(val);
                         let tagBuffer = encodeSEXP(tag);
                         buffers.push(valBuffer, tagBuffer);
@@ -308,7 +309,7 @@ function encodeMessage(msg) {
                     let buffer = new Buffer(1 * arr.length);
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
-                        buffer.writeInt8LE(bool(val), 1 * i);
+                        buffer.writeInt8(bool(val), 1 * i);
                     }
                     buffers.push(buffer);
                 }
@@ -320,7 +321,7 @@ function encodeMessage(msg) {
                     buffer.writeInt32LE(arr.length, 0);
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
-                        buffer.writeInt8LE(bool(val), 4 + 1 * i);
+                        buffer.writeInt8(bool(val), 4 + 1 * i);
                     }
                     buffers.push(buffer);
                 }
@@ -340,8 +341,16 @@ function encodeMessage(msg) {
                     let buffer = new Buffer(16 * arr.length);
                     for (let i = 0; i < arr.length; i++) {
                         let val = arr[i];
-                        buffer.writeDoubleLE(val.re, 16 * i);
-                        buffer.writeDoubleLE(val.im, 16 * i + 8);
+                        
+                        if (val !== null) {
+                            let re = val[0];
+                            let im = val[1];
+                            buffer.writeDoubleLE(re, 16 * i);
+                            buffer.writeDoubleLE(im, 16 * i + 8);
+                        } else {
+                            DOUBLE_NA.copy(buffer, 16 * i);
+                            DOUBLE_NA.copy(buffer, 16 * i + 8);
+                        }
                     }
                     buffers.push(buffer);
                 }

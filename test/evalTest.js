@@ -134,18 +134,6 @@ describe("rserve-js's eval command", function() {
         );
     });
     
-    it ("supports a complex (XT_ARRAY_CPLX)", function(done) {
-        evaluatesTo("1 + 2i", [[1, 2]], done);
-    });
-    
-    it ("supports a complexes (XT_ARRAY_CPLX)", function(done) {
-        evaluatesTo("c(1 + 2i, 3 + 4i)", [[1, 2], [3, 4]], done);
-    });
-    
-    it ("supports a complexes with NA (XT_ARRAY_CPLX)", function(done) {
-        evaluatesTo("c(1 + 2i, NA, 3 + 4i)", [[1, 2], null, [3, 4]], done);
-    });
-    
     it ("supports function with default parameters (XT_CLOS)", function(done) {
         evaluatesTo(
             "function(a = 'hello', b = 2) { rep(a, b) }",
@@ -158,6 +146,18 @@ describe("rserve-js's eval command", function() {
             },
             done
         );
+    });
+    
+    it ("supports a complex (XT_ARRAY_CPLX)", function(done) {
+        evaluatesTo("1 + 2i", [[1, 2]], done);
+    });
+    
+    it ("supports a complexes (XT_ARRAY_CPLX)", function(done) {
+        evaluatesTo("c(1 + 2i, 3 + 4i)", [[1, 2], [3, 4]], done);
+    });
+    
+    it ("supports a complexes with NA (XT_ARRAY_CPLX)", function(done) {
+        evaluatesTo("c(1 + 2i, NA, 3 + 4i)", [[1, 2], null, [3, 4]], done);
     });
     
     it ("supports matrix", function(done) {

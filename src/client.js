@@ -147,12 +147,12 @@ class RserveClient extends EventEmitter {
         });
     }
 
-    voidEval(str, cb) {
+    voidEval(strOrSexp, cb) {
         this.sendMessage({
             command: _.CMD_voidEval,
             params: [{
-                type: _.DT_STRING,
-                value: str
+                type: typeof strOrSexp === "string" ? _.DT_STRING : _.DT_SEXP,
+                value: strOrSexp
             }]
         },
         function(err, msg) {
@@ -170,12 +170,12 @@ class RserveClient extends EventEmitter {
         });
     }
 
-    eval(str, cb) {
+    eval(strOrSexp, cb) {
         this.sendMessage({
             command: _.CMD_eval,
             params: [{
-                type: _.DT_STRING,
-                value: str
+                type: typeof strOrSexp === "string" ? _.DT_STRING : _.DT_SEXP,
+                value: strOrSexp
             }]
         },
         function(err, msg) {
