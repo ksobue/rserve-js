@@ -140,7 +140,7 @@ function encodeMessage(msg) {
         }
         
         let headerBuffer = new Buffer(length2 === 0 ? 4 : 8);
-        headerBuffer.writeInt8(type, 0);
+        headerBuffer.writeUInt8(type, 0);
         headerBuffer.writeIntLE(length, 1, 3);
         if (length2 !== 0) {
             headerBuffer.writeInt32LE(length2, 4);
@@ -389,7 +389,7 @@ function encodeMessage(msg) {
             }
             
             let headerBuffer = new Buffer(length2 === 0 ? 4 : 8);
-            headerBuffer.writeInt8(type , 0);
+            headerBuffer.writeUInt8(type , 0);
             headerBuffer.writeIntLE(length, 1, 3);
             if (length2 !== 0) {
                 headerBuffer.writeInt32LE(length2, 4);

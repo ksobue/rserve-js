@@ -56,7 +56,7 @@ function decodeMessage(buffer) {
     function decodeData(buffer) {
         let value;
         
-        let type = buffer.readInt8(pos + 0);
+        let type = buffer.readUInt8(pos + 0);
         pos += 1;
         let length = buffer.readIntLE(pos, 3);
         pos += 3;
@@ -119,7 +119,7 @@ function decodeMessage(buffer) {
         function decodeSEXP(buffer) {
             let value, attr;
             
-            let type = buffer.readInt8(pos);
+            let type = buffer.readUInt8(pos);
             pos += 1;
             let length = buffer.readIntLE(pos, 3);
             pos += 3;
