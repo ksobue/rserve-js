@@ -262,7 +262,7 @@ function encodeMessage(msg) {
                         if (val !== null) {
                             buffer.writeInt32LE(val, 4 * i);
                         } else {
-                            INT_NA.copy(buffer, 4 * 1);
+                            INT_NA.copy(buffer, 4 * i);
                         }
                     }
                     buffers.push(buffer);
