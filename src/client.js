@@ -414,11 +414,56 @@ class RserveClient extends EventEmitter {
                 cb(err);
                 return;
             }
-                
+            
             cb(null);
         });
     }
-
+    
+    setBufferSize(bufferSize, cb) {
+        this.sendMessage({
+            command: _.CMD_setBufferSize,
+            params: [
+                {
+                    type: _.DT_INT,
+                    value: bufferSize
+                }
+            ]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            cb(null);
+        });
+    }
+    
+    setEncoding(encoding, cb) {
+        if (encoding === "latin1") {
+            cb(new Error("'rserve-js' only support UTF8 encoding."));
+            return;
+        }
+        
+        this.sendMessage({
+            command: _.CMD_setEncoding,
+            params: [
+                {
+                    type: _.DT_STRING,
+                    value: encoding
+                }
+            ]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            cb(null);
+        });
+    }
+    
     close() {
         this.client.end();
     }
