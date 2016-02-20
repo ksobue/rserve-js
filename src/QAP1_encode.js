@@ -153,12 +153,12 @@ function encodeMessage(msg) {
         function encodeSEXP(expr) {
             let buffers = new Buffers();
             
-            if (expr.attr !== undefined) {
+            if (_.HAS_ATTR(expr.type)) {
                 let buffer = encodeSEXP(expr.attr);
                 buffers.push(buffer);
             }
             
-            switch (expr.type) {
+            switch (_.GET_XT(expr.type)) {
             case _.XT_NULL:
                 {
                     let buffer = new Buffer(0);

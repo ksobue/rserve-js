@@ -10,6 +10,7 @@ let _ = require("./Rsrv");
 let decodeMessage = require("./QAP1_decode");
 let encodeMessage = require("./QAP1_encode");
 let errorMessage = require("./error");
+let simplifySEXP = require("./util").simplifySEXP;
 
 
 class RserveClient extends EventEmitter {
@@ -189,7 +190,9 @@ class RserveClient extends EventEmitter {
                 return;
             }
             
-            cb(null, msg.params[0]);
+            let sexp = msg.params[0];
+            let jsObj = simplifySEXP(sexp);
+            cb(null, jsObj, sexp);
         });
     }
 

@@ -214,11 +214,11 @@ function decodeMessage(buffer) {
             case _.XT_LIST_TAG:
             case _.XT_LANG_TAG:
                 {
-                    value = {};
+                    value = [];
                     while (pos < eoa) {
                         let val = decodeSEXP(buffer);
                         let tag = decodeSEXP(buffer);
-                        value[tag] = val;
+                        value.push(val, tag);
                     }
                 }
                 break;
@@ -342,14 +342,15 @@ function decodeMessage(buffer) {
                 pos++;
             }
             
+            let sexp = {
+                type: type,
+                value: value
+            };
             if (attr !== undefined) {
-                Object.defineProperty(value, "attr", {
-                    enumerable: true,
-                    value: attr
-                });
+                sexp.attr = attr;
             }
             
-            return value;
+            return sexp;
         }
     }
 }
