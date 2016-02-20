@@ -23,11 +23,16 @@ describe("rserve-js's eval command", function() {
         });
     });
     
-    function evaluatesTo(evalText, expectedJsObj, expectedSEXP, done) {
+    function evaluatesTo(evalText, expectedJsObj, expectedSEXP, done, skipReEvaluation) {
         client.eval(evalText, function(err, jsObj, sexp) {
             expect(err).to.be.null;
             expect(jsObj).to.deep.equal(expectedJsObj);
             expect(sexp).to.deep.equal(expectedSEXP);
+            
+            if (skipReEvaluation) {
+                done();
+                return;
+            }
             
             client.eval(sexp, function(err, jsObj, sexp) {
                 expect(err).to.be.null;
@@ -278,9 +283,6 @@ describe("rserve-js's eval command", function() {
         );
     });
     
-    // RServe issue #57: eval command by SEXP(XT_CLOS) returns null
-    // https://github.com/s-u/Rserve/issues/57
-    /*
     it ("supports function (XT_CLOS)", function(done) {
         evaluatesTo(
             "function(a, b) { a + b }",
@@ -343,7 +345,8 @@ describe("rserve-js's eval command", function() {
                     }
                 }
             },
-            done
+            done,
+            true // eval command by SEXP(XT_CLOS) returns null (https://github.com/s-u/Rserve/issues/57)
         );
     });
     
@@ -409,10 +412,11 @@ describe("rserve-js's eval command", function() {
                     }
                 }
             },
-            done
+            done,
+            true // eval command by SEXP(XT_CLOS) returns null (https://github.com/s-u/Rserve/issues/57)
         );
     });
-    */
+    
     it ("supports a complex (XT_ARRAY_CPLX)", function(done) {
         evaluatesTo(
             "1 + 2i",
