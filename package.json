@@ -1,6 +1,6 @@
 {
   "name": "rserve-js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Rserve client in JavaScript",
   "keywords": [
     "R",
