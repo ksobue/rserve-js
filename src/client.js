@@ -133,14 +133,9 @@ class RserveClient extends EventEmitter {
                 value: name + "\n" + auth
             }]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -156,14 +151,9 @@ class RserveClient extends EventEmitter {
                 value: strOrSexp
             }]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -182,11 +172,6 @@ class RserveClient extends EventEmitter {
         function(err, msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length > 1) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -248,14 +233,9 @@ class RserveClient extends EventEmitter {
                 value: fileName
             }]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -271,14 +251,9 @@ class RserveClient extends EventEmitter {
                 value: fileName
             }]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -291,14 +266,9 @@ class RserveClient extends EventEmitter {
             command: _.CMD_closeFile,
             params: []
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -326,11 +296,6 @@ class RserveClient extends EventEmitter {
                 return;
             }
             
-            if (msg.params.length > 1) {
-                cb(new Error("Unexpected response. " + msg.params));
-                return;
-            }
-            
             cb(null, msg.params[0]);
         });
     }
@@ -343,14 +308,9 @@ class RserveClient extends EventEmitter {
                 value: buffer
             }]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -366,14 +326,9 @@ class RserveClient extends EventEmitter {
                 value: fileName
             }]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -395,14 +350,9 @@ class RserveClient extends EventEmitter {
                 }
             ]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
@@ -424,14 +374,9 @@ class RserveClient extends EventEmitter {
                 }
             ]
         },
-        function(err, msg) {
+        function(err, _msg) {
             if (err) {
                 cb(err);
-                return;
-            }
-            
-            if (msg.params.length !== 0) {
-                cb(new Error("Unexpected response. " + msg.params));
                 return;
             }
             
