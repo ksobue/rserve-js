@@ -4,7 +4,7 @@
 let EventEmitter = require("events");
 let net = require("net");
 let Buffers = require("buffers");
-let crypt = require("crypt3");
+let unixCrypt = require("unix-crypt-td-js");
 
 let _ = require("./Rsrv");
 let decodeMessage = require("./QAP1_decode");
@@ -116,7 +116,7 @@ class RserveClient extends EventEmitter {
             }
             
             let salt = key.substring(1, 3);
-            auth = crypt(pswd, salt);
+            auth = unixCrypt(pswd, salt);
             
         } else if (this.info.indexOf("ARpt") !== -1) { // plain text
             auth = pswd;

@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "buffers": "^0.1.1",
-    "crypt3": "^0.2.0"
+    "unix-crypt-td-js": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
