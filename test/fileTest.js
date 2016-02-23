@@ -4,15 +4,12 @@
 const fs = require("fs");
 const expect = require("chai").expect;
 const Rserve = require("..");
-const _ = Rserve.constants;
 
-describe("rserve-js", function() {
+describe("File I/O commands", function() {
     let client;
     
     before(function(done) {
-        client = Rserve.connect("localhost", _.default_Rsrv_port, function() {
-            done();
-        });
+        client = Rserve.connect("localhost", Rserve.const.default_Rsrv_port, done);
     });
     
     it("supports writing new file (CMD_createFile, CMD_writeFile, CMD_closeFile)", function(done) {

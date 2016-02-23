@@ -4,10 +4,10 @@
 const expect = require("chai").expect;
 const Rserve = require("..");
 
-describe("rserve-js's login command", function() {
+describe("CMD_login", function() {
     
-    it("succeeds with valid credential (ARuc)", function(done) {
-        let client = Rserve.connect("localhost", 6313, function(loginRequired) {
+    it("accepts user with valid credential [ARuc]", function(done) {
+        let client = Rserve.connect("localhost", 6312, function(loginRequired) {
             expect(loginRequired).to.be.true;
             
             client.login("foo", "bar", function(err) {
@@ -18,8 +18,8 @@ describe("rserve-js's login command", function() {
         });
     });
     
-    it("fails with invalid credential (ARuc)", function(done) {
-        let client = Rserve.connect("localhost", 6313, function(loginRequired) {
+    it("reject login with invalid credential [ARuc]", function(done) {
+        let client = Rserve.connect("localhost", 6312, function(loginRequired) {
             expect(loginRequired).to.be.true;
             
             client.login("foo", "buzz", function(err) {
@@ -30,8 +30,8 @@ describe("rserve-js's login command", function() {
         });
     });
     
-    it("succeeds with valid credential (ARpt)", function(done) {
-        let client = Rserve.connect("localhost", 6313, function(loginRequired) {
+    it("accepts user with valid credential [ARpt]", function(done) {
+        let client = Rserve.connect("localhost", 6312, function(loginRequired) {
             expect(loginRequired).to.be.true;
             
             // Hack to force using ARpt.
@@ -47,8 +47,8 @@ describe("rserve-js's login command", function() {
         });
     });
     
-    it("fails with invalid credential (ARpt)", function(done) {
-        let client = Rserve.connect("localhost", 6313, function(loginRequired) {
+    it("rejects login with invalid credential [ARpt]", function(done) {
+        let client = Rserve.connect("localhost", 6312, function(loginRequired) {
             expect(loginRequired).to.be.true;
             
             // Hack to force using ARpt.
