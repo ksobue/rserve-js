@@ -3,30 +3,28 @@
 
 const spawn = require("child_process").spawn;
 const Rserve = require("..");
+const _ = Rserve.constants;
 
-describe("rserve-js instance", function() {
+describe("rserve-js", function() {
     
-    describe("connecting to localhost:6312", function() {
+    describe("connecting to out-of-box config Rserve", function() {
         before(function(done) {
-            let options = [
-                "--RS-port",    6312
-            ];
-            let proc = spawn("R", ["CMD", "Rserve", "--vanilla"].concat(options), {stdio: "ignore"});
+            let proc = spawn("R", ["CMD", "Rserve", "--vanilla"], {stdio: "ignore"});
             proc.on("exit", function() {
                 // R command spawns Rserve process and exit.
                 done();
             });
         });
         
-        require("./assignTest");
+        require("./voidEvalTest");
         require("./evalTest");
+        require("./assignTest");
         require("./fileTest");
         require("./setBufferSizeTest");
         require("./setEncodingTest");
-        require("./voidEvalTest");
         
         after(function(done) {
-            let client = Rserve.connect("localhost", 6312, function() {
+            let client = Rserve.connect("localhost", _.default_Rsrv_port, function() {
                 client.shutdown(null, function(err) {
                     if (err) {
                         throw err;

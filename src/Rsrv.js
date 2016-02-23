@@ -2,7 +2,7 @@
 
 const constants = {
     RSERV_VER               : 0x010805,
-    default_Rsrv_port       : 6331,
+    default_Rsrv_port       : 6311,
     
     PAR_TYPE                : function(x) { return x & 255; },
     PAR_LEN                 : function(x) { return x >>> 8; },

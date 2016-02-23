@@ -3,12 +3,13 @@
 
 const expect = require("chai").expect;
 const Rserve = require("..");
+const _ = Rserve.constants;
 
 describe("rserve-js", function() {
     let client;
     
     before(function(done) {
-        client = Rserve.connect("localhost", 6312, function() {
+        client = Rserve.connect("localhost", _.default_Rsrv_port, function() {
             done();
         });
     });

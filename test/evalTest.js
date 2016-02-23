@@ -1,17 +1,15 @@
 /*eslint-env mocha*/
 "use strict";
 
-//const spawn = require("child_process").spawn;
 const expect = require("chai").expect;
 const Rserve = require("..");
-
-const _ = require("../src/Rsrv"); // TODO: to be removed
+const _ = Rserve.constants;
 
 describe("rserve-js's eval command", function() {
     let client;
     
     before(function(done) {
-        client = Rserve.connect("localhost", 6312, function() {
+        client = Rserve.connect("localhost", _.default_Rsrv_port, function() {
             done();
         });
     });
