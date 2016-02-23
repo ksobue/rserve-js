@@ -1,7 +1,6 @@
 /*eslint-env mocha*/
 "use strict";
 
-const spawn = require("child_process").spawn;
 const fs = require("fs");
 const expect = require("chai").expect;
 const Rserve = require("..");
@@ -10,15 +9,8 @@ describe("rserve-js", function() {
     let client;
     
     before(function(done) {
-        let options = [
-            "--RS-port",    6314
-        ];
-        let proc = spawn("R", ["CMD", "Rserve", "--vanilla"].concat(options), {stdio: "ignore"});
-        proc.on("exit", function() {
-            // R command spawns Rserve process and exit.
-            client = Rserve.connect("localhost", 6314, function() {
-                done();
-            });
+        client = Rserve.connect("localhost", 6312, function() {
+            done();
         });
     });
     
@@ -94,13 +86,7 @@ describe("rserve-js", function() {
     });
     
     after(function(done) {
-        client.shutdown(null, function(err) {
-            if (err) {
-                throw err;
-            }
-            
-            client.close();
-            done();
-        });
+        client.close();
+        done();
     });
 });

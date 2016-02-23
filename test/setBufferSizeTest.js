@@ -13,17 +13,10 @@ describe("rserve-js", function() {
         });
     });
     
-    it("supports void eval command (CMD_voidEval)", function(done) {
-        client.voidEval("voidEvalTest <- 123", function(err) {
+    it("supports setting buffer size (CMD_setBufferSize)", function(done) {
+        client.setBufferSize(1024, function(err) {
             expect(err).to.be.null;
-            expect(arguments).to.have.length(1);
-            
-            client.eval("voidEvalTest", function(err, response) {
-                expect(err).to.be.null;
-                expect(response).to.deep.equal([123]);
-                
-                done();
-            });
+            done();
         });
     });
     
