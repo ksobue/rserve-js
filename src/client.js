@@ -1,22 +1,29 @@
 /*eslint no-unused-vars: 1*/
 "use strict";
 
-let EventEmitter = require("events");
-let net = require("net");
-let Buffers = require("buffers");
-let unixCrypt = require("unix-crypt-td-js");
+const EventEmitter = require("events");
+const url = require("url");
+//const net = require("./net-ws");
+const Buffers = require("buffers");
+const unixCrypt = require("unix-crypt-td-js");
 
-let _ = require("./Rsrv");
-let decodeMessage = require("./QAP1_decode");
-let encodeMessage = require("./QAP1_encode");
-let errorMessage = require("./error");
-let simplifySEXP = require("./util").simplifySEXP;
+const _ = require("./Rsrv");
+const decodeMessage = require("./QAP1_decode");
+const encodeMessage = require("./QAP1_encode");
+const errorMessage = require("./error");
+const simplifySEXP = require("./util").simplifySEXP;
 
 
 class RserveClient extends EventEmitter {
     
-    constructor(hostname, port, connectListener) {
+    constructor(rserveUrlStr, connectListener) {
         super();
+        
+        let rserveUrl = url.parse(rserveUrlStr);
+        let protocol = rserveUrl.protocol;
+        let hostname = rserveUrl.hostname;
+        let port = rserveUrl.port;
+        let net = require("net");
         
         this.on("connect", connectListener);
         
@@ -86,6 +93,7 @@ class RserveClient extends EventEmitter {
                             buffer.copy(fixedBuffer, 16 + 1 + 3, 16);
                             buffer = fixedBuffer;
                         }
+                        
                         let resp = decodeMessage(buffer);
                         if ((resp.command & _.RESP_OK) !== _.RESP_OK) {
                             let statusCode = _.CMD_STAT(resp.command);
@@ -100,6 +108,7 @@ class RserveClient extends EventEmitter {
         };
         
         this.close = function() {
+            handler = function(){};
             client.end();
         };
     }
