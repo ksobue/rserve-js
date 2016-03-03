@@ -1,44 +1,16 @@
 /*eslint-env mocha*/
 "use strict";
 
-const spawn = require("child_process").spawn;
-const expect = require("chai").expect;
-const Rserve = require("..");
-
-function startRserve(config, cb) {
-    // 'config' parameter is optional.
-    if (typeof config === "function") {
-        cb = config;
-    }
+module.exports = function(test) {
+    const expect = require("chai").expect;
+    const Rserve = require("..");
+    const startRserve = require("./startRserve");
     
-    let args = Object.keys(config).reduce(function(args, key) {
-        let val = config[key];
-        return args.concat("--RS-set", key + "=" + val);
-    }, []);
-    
-    let proc = spawn("R", ["CMD", "Rserve", "--vanilla"].concat(args), {stdio: "ignore"});
-    proc.on("exit", function() {
-        // R command spawns Rserve process and exit.
-        cb();
-    });
-}
-
-let tests = [
-    {
-        title: "QAP1 over TCP/IP",
-        url: "tcp://localhost:6311",
-        config: {
-            "auth": "required",
-            "plaintext": "enabled",
-            "pwdfile": __dirname + "/password.txt"
-        }
-    }
-];
-
-tests.forEach(function(test) {
     describe(test.title, function() {
         before(function(done) {
-            startRserve(test.config, done);
+            startRserve(test.config, function(){
+                done();
+            });
         });
         
         describe("CMD_login command", function() {
@@ -125,4 +97,4 @@ tests.forEach(function(test) {
         
     it("should support CMD_keyReq");
     it("should support CMD_secLogin");
-});
+};

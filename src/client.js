@@ -2,12 +2,11 @@
 "use strict";
 
 const EventEmitter = require("events");
-const url = require("url");
-//const net = require("./net-ws");
 const Buffers = require("buffers");
 const unixCrypt = require("unix-crypt-td-js");
 
 const _ = require("./Rsrv");
+const network = require("./net_node");
 const decodeMessage = require("./QAP1_decode");
 const encodeMessage = require("./QAP1_encode");
 const errorMessage = require("./error");
@@ -16,18 +15,12 @@ const simplifySEXP = require("./util").simplifySEXP;
 
 class RserveClient extends EventEmitter {
     
-    constructor(rserveUrlStr, connectListener) {
+    constructor(url, connectListener) {
         super();
-        
-        let rserveUrl = url.parse(rserveUrlStr);
-        let protocol = rserveUrl.protocol;
-        let hostname = rserveUrl.hostname;
-        let port = rserveUrl.port;
-        let net = require("net");
         
         this.on("connect", connectListener);
         
-        let client = net.connect(port, hostname);
+        let client = network.connect(url);
         
         client.on("error", function(err) {
             this.emit("error", err);
