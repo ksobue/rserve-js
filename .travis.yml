@@ -18,9 +18,12 @@ before_install:
   - R CMD Rserve --version
   # Use chromium browser in Travis.
   # http://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
-  - export CHROME_BIN=chromium-browser
+  - export CHROME_BIN=/usr/bin/google-chrome
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  - sudo apt-get install -y libappindicator1 fonts-liberation
+  - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  - sudo dpkg -i google-chrome*.deb
 node_js:
   - "4.3"
 script:
