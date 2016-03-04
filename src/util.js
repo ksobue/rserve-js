@@ -29,11 +29,19 @@ function simplifySEXP(sexp) {
                 table[0][i + 1] = columnLabel;
             });
             
-            if (rowLabels.length === 2 && rowLabels[0] === null && rowLabels[1] < 0) {
-                let rownums = rowLabels[1] * (-1);
-                for (let j = 0; j < rownums; j++) {
-                    table[j + 1] = [];
-                    table[j + 1][0] = j + 1;
+            if (rowLabels.length === 2 && rowLabels[0] === null) {
+                if (rowLabels[1] >= 0) {
+                    let rownums = rowLabels[1];
+                    for (let j = 0; j < rownums; j++) {
+                        table[j + 1] = [];
+                        table[j + 1][0] = j + 1;
+                    }
+                } else {
+                    let rownums = rowLabels[1] * (-1);
+                    for (let j = 0; j < rownums; j++) {
+                        table[j + 1] = [];
+                        table[j + 1][0] = j + 1;
+                    }
                 }
             } else {
                 rowLabels.forEach(function(rowLabel, j) {

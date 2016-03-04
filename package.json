@@ -7,18 +7,29 @@
     "Rserve"
   ],
   "main": "index.js",
+  "browser": {
+    "./src/net_node.js": "./src/net_browser.js",
+    "./test/startRserve.js": "./test/browser/startRserve.js"
+  },
   "engines": {
     "node": ">=4.0"
   },
   "scripts": {
-    "test": "mocha",
-    "coveralls": "istanbul cover _mocha --report lcovonly && cat ./coverage/lcov.info | coveralls"
+    "browserify": "browserify --require .:rserve-js --outfile rserve-js-browser.js",
+    "test": "npm run test_node && npm run test_browser",
+    "test_node": "mocha",
+    "coveralls": "istanbul cover _mocha --report lcovonly && cat ./coverage/lcov.info | coveralls",
+    "pretest_browser": "node test/browser/httpRserve > /dev/null &",
+    "test_browser": "karma start test/browser/karma.conf.js --single-run",
+    "posttest_browser": "node test/browser/httpRserve --stop"
   },
   "dependencies": {
     "buffers": "^0.1.1",
-    "unix-crypt-td-js": "^1.0.0"
+    "unix-crypt-td-js": "^1.0.0",
+    "ws": "^1.0.1"
   },
   "devDependencies": {
+    "browserify": "^13.0.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.6",
     "istanbul": "^0.4.2",
