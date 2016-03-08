@@ -4,6 +4,7 @@
 const EventEmitter = require("events");
 const Buffers = require("buffers");
 const unixCrypt = require("unix-crypt-td-js");
+const crypto = require("crypto");
 
 const _ = require("./Rsrv");
 const network = require("./net_node");
@@ -74,7 +75,7 @@ class RserveClient extends EventEmitter {
                         
                         // Rserve bug: CMD_readFile response is not encoded as DT_bytestream
                         // https://github.com/s-u/Rserve/issues/15
-                        if (req.command === _.CMD_readFile) {
+                        if (req.command === _.CMD_readFile || req.command === _.CMD_keyReq) {
                             let fixedBuffer = new Buffer(buffer.length + 1 + 3);
                             // header with correct message size
                             buffer.copy(fixedBuffer, 0, 0, 16);
@@ -106,7 +107,7 @@ class RserveClient extends EventEmitter {
         };
     }
     
-    login(name, pswd, cb) {
+    login(username, password, cb) {
         let auth;
         if (this.info.indexOf("ARuc") !== -1) { // unix crypt
             let key = this.info.filter(function(info) {
@@ -118,10 +119,10 @@ class RserveClient extends EventEmitter {
             }
             
             let salt = key.substring(1, 3);
-            auth = unixCrypt(pswd, salt);
+            auth = unixCrypt(password, salt);
             
         } else if (this.info.indexOf("ARpt") !== -1) { // plain text
-            auth = pswd;
+            auth = password;
             
         } else {
             cb(new Error("Unsupported authentication method."));
@@ -132,7 +133,7 @@ class RserveClient extends EventEmitter {
             command: _.CMD_login,
             params: [{
                 type: _.DT_STRING,
-                value: name + "\n" + auth
+                value: username + "\n" + auth
             }]
         },
         function(err, _msg) {
@@ -207,16 +208,103 @@ class RserveClient extends EventEmitter {
         });
     }
 
-    switch(_protocol) {
-        
+    switch(protocol, cb) {
+        // Only "TLS" is supported.
+        this.sendMessage({
+            command: _.CMD_switch,
+            params: [{
+                type: _.DT_STRING,
+                value: protocol
+            }]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    keyReq(_request, _key) {
-        
+    keyReq(authType, cb) {
+        // Only "rsa-authkey" is supported.
+        this.sendMessage({
+            command: _.CMD_keyReq,
+            params: [{
+                type: _.DT_STRING,
+                value: authType
+            }]
+        },
+        function(err, msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            let buffer = msg.params[0];
+            
+            let authKeyLength = buffer.readInt32LE(0);
+            let authKey = buffer.slice(4, 4 + authKeyLength);
+            
+            let publicKeyLength = buffer.readInt32LE(4 + authKeyLength);
+            let publicKeyDer = buffer.slice(4 + authKeyLength + 4, 4 + authKeyLength + 4 + publicKeyLength);
+            
+            cb(null, authKey, publicKeyDer);
+        });
     }
 
-    secLogin(_encryptedAuth) {
+    secLogin(authKey, publicKeyDer, username, password, cb) {
         
+        let credential = Buffer.concat([new Buffer(username + "\n" + password, "utf8"), new Buffer([0x00])]);
+        
+        let buffer = new Buffer(4 + authKey.length + 4 + credential.length);
+        buffer.writeInt32LE(authKey.length, 0);
+        authKey.copy(buffer, 4);
+        buffer.writeInt32LE(credential.length, 4 + authKey.length);
+        credential.copy(buffer, 4 + authKey.length + 4);
+        
+        let publicKeyPem = (function(derKey) {
+            const child_process = require("child_process");
+            let result = child_process.spawnSync("openssl", ["rsa", "-pubin", "-inform", "der", "-pubout", "-outform", "pem"], {
+                input: derKey
+            });
+            if (result.stderr.length > 0) {
+                throw new Error(result.stderr.toString());
+            }
+            let pemKey = result.stdout;
+            return pemKey;
+        })(publicKeyDer);
+        
+        // https://rforge.net/doc/packages/PKI/PKI.crypt.html
+        // Note that the payload for RSA encryption should be very small since it must fit into the key size including padding.
+        // For example, 1024-bit key can only encrypt 87 bytes, while 2048-bit key can encrypt 215 bytes. 
+        let sliceSize = Math.floor(publicKeyPem.length / 2);
+        
+        let encryptedBufferSlices = [];
+        let slices = Math.ceil(buffer.length / sliceSize);
+        for (let i = 0; i < slices; i++) {
+            let slicedBuffer = buffer.slice(i * sliceSize, i < slices - 1 ? (i + 1) * sliceSize : buffer.length);
+            let encryptedBufferSlice = crypto.publicEncrypt(publicKeyPem, slicedBuffer);
+            encryptedBufferSlices.push(encryptedBufferSlice);
+        }
+        let encryptedBuffer = Buffer.concat(encryptedBufferSlices);
+        
+        this.sendMessage({
+            command: _.CMD_secLogin,
+            params: [{
+                type: _.DT_BYTESTREAM,
+                value: encryptedBuffer
+            }]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
     ocCall(_sexp) {

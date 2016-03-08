@@ -744,6 +744,7 @@ module.exports = function(test) {
                 });
             });
         });
+        
         describe("CMD_setEncoding command", function() {
             it("does not support 'native' encoding", function(done) {
                 // Client does not know which encoding is set for a server.
