@@ -75,7 +75,7 @@ module.exports = function(test) {
             });
         });
         
-        describe("CMD_switch command", function() {
+        describe.skip("CMD_switch command", function() {
             it("accept TLS protocol", function(done) {
                 let client = Rserve.connect(test.url, function(loginRequired) {
                     expect(loginRequired).to.be.true;
@@ -89,7 +89,7 @@ module.exports = function(test) {
             });
         });
         
-        describe("CMD_keyReq command", function() {
+        describe.skip("CMD_keyReq command", function() {
             it("returns authentication key and public key", function(done) {
                 let client = Rserve.connect(test.url, function(loginRequired) {
                     expect(loginRequired).to.be.true;
@@ -105,9 +105,7 @@ module.exports = function(test) {
             });
         });
         
-        // RSA public key returned in CMD_keyReq response does not work
-        // https://github.com/s-u/Rserve/issues/60
-        describe("CMD_secLogin command", function() {
+        describe.skip("CMD_secLogin command", function() {
             it("accept user with encrypted credential", function(done) {
                 let client = Rserve.connect(test.url, function(loginRequired) {
                     expect(loginRequired).to.be.true;

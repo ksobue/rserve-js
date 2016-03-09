@@ -18,7 +18,7 @@ module.exports = function(test) {
             });
         });
         
-        describe("CMD_ctrlEval command", function() {
+        describe.skip("CMD_ctrlEval command", function() {
             it("evaluates a given string in the global environment of the server", function(done) {
                 client.ctrlEval("ctrlEvalTest <- 'control eval test'", function(err) {
                     expect(err).to.be.null;
@@ -36,7 +36,7 @@ module.exports = function(test) {
             });
         });
         
-        describe("CMD_ctrlSource command", function() {
+        describe.skip("CMD_ctrlSource command", function() {
             it("sources a given R file in the global environment of the server", function(done) {
                 client.ctrlSource(dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
