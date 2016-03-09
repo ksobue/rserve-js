@@ -46,9 +46,8 @@ require("./normalCommandsTest") (
         "url": "ws://localhost:8081",
         "config": {
             "qap.port": 6312,
-            "http.port": 8080,
-            "websockets.port": 8081,
             "websockets": "enable",
+            "websockets.port": 8081,
             "oob": "enable",
             "control": "enable"
         }
@@ -61,9 +60,8 @@ require("./controlCommandsTest") (
         "url": "ws://localhost:8081",
         "config": {
             "qap.port": 6312,
-            "http.port": 8080,
-            "websockets.port": 8081,
             "websockets": "enable",
+            "websockets.port": 8081,
             "oob": "enable",
             "control": "enable"
         }
@@ -76,10 +74,8 @@ require("./loginCommandTest") (
         "url": "ws://localhost:8081",
         "config": {
             "qap.port": 6312,
-            "qap.tls.port": 6313,
-            "http.port": 8080,
-            "websockets.port": 8081,
             "websockets": "enable",
+            "websockets.port": 8081,
             "oob": "enable",
             "auth": "required",
             "plaintext": "enabled",

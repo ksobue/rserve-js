@@ -11,7 +11,8 @@ module.exports = function(test) {
         let client;
         
         before(function(done) {
-            startRserve(test.config, function() {
+            startRserve(test.config, function(err, _info) {
+                expect(err).to.be.null;
                 client = Rserve.connect(test.url, done);
             });
         });

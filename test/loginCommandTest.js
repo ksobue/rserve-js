@@ -7,8 +7,10 @@ module.exports = function(test) {
     const startRserve = require("./startRserve");
     
     describe(test.title, function() {
+        
         before(function(done) {
-            startRserve(test.config, function(){
+            startRserve(test.config, function(err, _info) {
+                expect(err).to.be.null;
                 done();
             });
         });

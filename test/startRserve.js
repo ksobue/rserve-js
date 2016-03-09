@@ -20,7 +20,11 @@ let startRserve = function(config, cb) {
         cb(new Error("Failed to start Rserve."));
     });
     proc.on("exit", function() {
-        cb(null);
+        let info = {
+            pid: proc.id,
+            basedir: process.cwd()
+        };
+        cb(null, info);
     });
 };
 

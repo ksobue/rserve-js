@@ -8,9 +8,12 @@ module.exports = function(test) {
 
     describe(test.title, function() {
         let client;
+        let dirname;
         
         before(function(done) {
-            startRserve(test.config, function() {
+            startRserve(test.config, function(err, info) {
+                expect(err).to.be.null;
+                dirname = info.basedir + "/test";
                 client = Rserve.connect(test.url, done);
             });
         });
@@ -35,7 +38,7 @@ module.exports = function(test) {
         
         describe("CMD_ctrlSource command", function() {
             it("sources a given R file in the global environment of the server", function(done) {
-                client.ctrlSource(__dirname + "/conf/ctrlSourceTest.R", function(err) {
+                client.ctrlSource(dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
                     
                     // Subsequent connection will start with the above string already evaluated.

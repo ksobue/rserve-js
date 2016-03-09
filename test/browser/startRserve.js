@@ -28,7 +28,14 @@ let startRserve = function(config, cb) {
                 return;
             }
             
-            cb(null);
+            let buffers = [];
+            res.on("data", function(buffer) {
+                buffers.push(buffer);
+            });
+            res.on("end", function() {
+                let info = JSON.parse(Buffer.concat(buffers).toString("utf8"));
+                cb(null, info);
+            });
         }
     );
     req.write(query);

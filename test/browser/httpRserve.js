@@ -68,10 +68,16 @@ let server = http.createServer(function(req, resp) {
                         return;
                     }
                     
+                    let info = {
+                        pid: proc.pid,
+                        basedir: basedir
+                    };
+                    
                     resp.writeHead(200, {
-                        "Access-Control-Allow-Origin": "*"
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type": "application/json"
                     });
-                    resp.write("" + proc.pid);
+                    resp.write(JSON.stringify(info));
                     resp.end();
                     return;
                 });
@@ -131,7 +137,7 @@ if (process.argv.indexOf("--stop") !== -1) {
         port: 6060,
         path: "/stop"
     });
-    req.write("a");
+    req.write("");
     req.end();
     return;
 }
