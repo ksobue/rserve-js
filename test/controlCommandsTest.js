@@ -41,16 +41,22 @@ module.exports = function(test) {
                 client.ctrlSource(dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
                     
-                    done();
-                    // Subsequent connection will start with the above string already evaluated.
-/*                    let otherClient = Rserve.connect(test.url, function() {
-                        otherClient.eval("ctrlSourceTest", function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.deep.equal(["control source test"]);
-                            otherClient.close();
-                            done();
+                    client.eval("ctrlSourceTest", function(err, sexp) {
+                        console.log(err);
+                        console.log(sexp);
+                        
+                        // Subsequent connection will start with the above string already evaluated.
+                        let otherClient = Rserve.connect(test.url, function() {
+                            console.log("other client connected");
+                            otherClient.eval("ctrlSourceTest", function(err, result) {
+                                console.log("other client eval'ed");
+                                expect(err).to.be.null;
+                                expect(result).to.deep.equal(["control source test"]);
+                                otherClient.close();
+                                done();
+                            });
                         });
-                    });*/
+                    });
                 });
             });
         });
