@@ -106,6 +106,7 @@ module.exports = function(test) {
         });
         
         describe.skip("CMD_secLogin command", function() {
+            this.timeout(5000); // Encryption can take time.
             it("accept user with encrypted credential", function(done) {
                 let client = Rserve.connect(test.url, function(loginRequired) {
                     expect(loginRequired).to.be.true;
