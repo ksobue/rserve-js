@@ -18,7 +18,7 @@ module.exports = function(test) {
             });
         });
         
-        describe.skip("CMD_ctrlEval command", function() {
+        describe("CMD_ctrlEval command", function() {
             it("evaluates a given string in the global environment of the server", function(done) {
                 client.ctrlEval("ctrlEvalTest <- 'control eval test'", function(err) {
                     expect(err).to.be.null;
