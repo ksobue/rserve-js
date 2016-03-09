@@ -38,21 +38,27 @@ module.exports = function(test) {
         
         describe("CMD_ctrlSource command", function() {
             it("sources a given R file in the global environment of the server", function(done) {
-                console.log(dirname + "/conf/ctrlSourceTest.R");
-                console.log(require('fs').readFileSync(dirname + "/conf/ctrlSourceTest.R", "utf8"))
                 client.ctrlSource(dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
                     
-                    done();
                     // Subsequent connection will start with the above string already evaluated.
-/*                    let otherClient = Rserve.connect(test.url, function() {
-                        otherClient.eval("ctrlSourceTest", function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.deep.equal(["control source test"]);
-                            otherClient.close();
-                            done();
+                    try {
+                        let otherClient = Rserve.connect(test.url, function() {
+                            otherClient.eval("ctrlSourceTest", function(err, result) {
+                                expect(err).to.be.null;
+                                expect(result).to.deep.equal(["control source test"]);
+                                otherClient.close();
+                                done();
+                            });
                         });
-                    });*/
+                        otherClient.on("error", function(err) {
+                            console.err(err);
+                            throw err;
+                        })
+                    } catch (err) {
+                        console.err(err);
+                        throw err;
+                    }
                 });
             });
         });
