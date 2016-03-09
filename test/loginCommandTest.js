@@ -108,6 +108,7 @@ module.exports = function(test) {
         // RSA public key returned in CMD_keyReq response does not work
         // https://github.com/s-u/Rserve/issues/60
         describe("CMD_secLogin command", function() {
+            this.timeout(5000); // Encryption can take time.
             it("accept user with encrypted credential", function(done) {
                 let client = Rserve.connect(test.url, function(loginRequired) {
                     expect(loginRequired).to.be.true;
