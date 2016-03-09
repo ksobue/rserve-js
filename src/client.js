@@ -464,24 +464,44 @@ class RserveClient extends EventEmitter {
         });
     }
 
-    detachSession(_sessionKey) {
-        
+    ctrlEval(str, cb) {
+        this.sendMessage({
+            command: _.CMD_ctrlEval,
+            params: [
+                {
+                    type: _.DT_STRING,
+                    value: str
+                }
+            ]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
-    detachedVoidEval(_sessionKey) {
-        
-    }
-
-    attachSession(_sessionKey) {
-        
-    }
-
-    ctrlEval(_str) {
-        
-    }
-
-    ctrlSource(_str) {
-        
+    ctrlSource(filePath, cb) {
+        this.sendMessage({
+            command: _.CMD_ctrlSource,
+            params: [
+                {
+                    type: _.DT_STRING,
+                    value: filePath
+                }
+            ]
+        },
+        function(err, _msg) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            
+            cb(null);
+        });
     }
 
     ctrlShutdown(cb) {
