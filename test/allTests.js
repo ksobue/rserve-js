@@ -33,7 +33,7 @@ require("./loginCommandTest") (
             "plaintext": "enabled",
             "pwdfile": __dirname + "/conf/password.txt",
             "rsa.key": __dirname + "/conf/server.key",      // for CMD_keyReq and CMD_secLogin
-            "switch.qap.tls": "enable",                // for CMD_switch
+            "switch.qap.tls": "enable",                     // for CMD_switch
             "tls.key": __dirname + "/conf/server.key",      // for CMD_switch
             "tls.cert": __dirname + "/conf/server.csr"      // for CMD_switch
         }

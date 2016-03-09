@@ -5,6 +5,7 @@ const EventEmitter = require("events");
 const Buffers = require("buffers");
 const unixCrypt = require("unix-crypt-td-js");
 const crypto = require("crypto");
+const NodeRSA = require("node-rsa");
 
 const _ = require("./Rsrv");
 const network = require("./net_node");
@@ -264,22 +265,11 @@ class RserveClient extends EventEmitter {
         buffer.writeInt32LE(credential.length, 4 + authKey.length);
         credential.copy(buffer, 4 + authKey.length + 4);
         
-        let publicKeyPem = (function(derKey) {
-            const child_process = require("child_process");
-            let result = child_process.spawnSync("openssl", ["rsa", "-pubin", "-inform", "der", "-pubout", "-outform", "pem"], {
-                input: derKey
-            });
-            if (result.stderr.length > 0) {
-                throw new Error(result.stderr.toString());
-            }
-            let pemKey = result.stdout;
-            return pemKey;
-        })(publicKeyDer);
-        
-        // https://rforge.net/doc/packages/PKI/PKI.crypt.html
-        // Note that the payload for RSA encryption should be very small since it must fit into the key size including padding.
-        // For example, 1024-bit key can only encrypt 87 bytes, while 2048-bit key can encrypt 215 bytes. 
-        let sliceSize = Math.floor(publicKeyPem.length / 2);
+        // https://github.com/s-u/Rserve/issues/60
+        let rsaPublicKey = new NodeRSA();
+        rsaPublicKey.importKey(publicKeyDer, "pkcs1-public-der");
+        let publicKeyPem = rsaPublicKey.exportKey("pkcs8-public-pem");
+        let sliceSize = rsaPublicKey.getMaxMessageSize();
         
         let encryptedBufferSlices = [];
         let slices = Math.ceil(buffer.length / sliceSize);

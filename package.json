@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "buffers": "^0.1.1",
+    "node-rsa": "^0.3.2",
     "unix-crypt-td-js": "^1.0.0",
     "ws": "^1.0.1"
   },
