@@ -14,6 +14,7 @@ module.exports = function(test) {
             startRserve(test.config, function(err, info) {
                 expect(err).to.be.null;
                 dirname = info.basedir + "/test";
+                console.log(dirname)
                 client = Rserve.connect(test.url, done);
             });
         });
@@ -36,7 +37,7 @@ module.exports = function(test) {
             });
         });
         
-        describe.skip("CMD_ctrlSource command", function() {
+        describe("CMD_ctrlSource command", function() {
             it("sources a given R file in the global environment of the server", function(done) {
                 client.ctrlSource(dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
