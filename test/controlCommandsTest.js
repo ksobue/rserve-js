@@ -35,7 +35,7 @@ module.exports = function(test) {
         
         describe("CMD_ctrlSource command", function() {
             it("sources a given R file in the global environment of the server", function(done) {
-                client.ctrlSource(__dirname + "/conf/ctrSourceTest.R", function(err) {
+                client.ctrlSource(__dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
                     
                     // Subsequent connection will start with the above string already evaluated.
