@@ -14,7 +14,6 @@ module.exports = function(test) {
             startRserve(test.config, function(err, info) {
                 expect(err).to.be.null;
                 dirname = info.basedir + "/test";
-                console.log(dirname)
                 client = Rserve.connect(test.url, done);
             });
         });
@@ -39,6 +38,8 @@ module.exports = function(test) {
         
         describe("CMD_ctrlSource command", function() {
             it("sources a given R file in the global environment of the server", function(done) {
+                console.log(dirname + "/conf/ctrlSourceTest.R");
+                console.log(require('fs').readFileSync(dirname + "/conf/ctrlSourceTest.R", "utf8"))
                 client.ctrlSource(dirname + "/conf/ctrlSourceTest.R", function(err) {
                     expect(err).to.be.null;
                     
