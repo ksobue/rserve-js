@@ -61,17 +61,12 @@ let server = http.createServer(function(req, resp) {
             req.on("end", function() {
                 let query = querystring.parse(data);
                 let conf = config(query);
-                startRserve(conf, function(err, proc) {
+                startRserve(conf, function(err, info) {
                     if (err) {
                         resp.writeHead(500, "Failed to start Rserve. " + err);
                         resp.end();
                         return;
                     }
-                    
-                    let info = {
-                        pid: proc.pid,
-                        basedir: basedir
-                    };
                     
                     resp.writeHead(200, {
                         "Access-Control-Allow-Origin": "*",
@@ -81,6 +76,26 @@ let server = http.createServer(function(req, resp) {
                     resp.end();
                     return;
                 });
+            });
+        } else if (reqURL.pathname === "/stop-r-serve") {
+            let data = "";
+            req.on("data", function(chunk) {
+                data += chunk;
+            });
+            req.on("end", function() {
+                try {
+                    let query = querystring.parse(data);
+                    process.kill(query.pid, "SIGINT");
+                    console.log("Rserve (pid:" + query.pid + ") stopped.\n");
+                    
+                    resp.writeHead(200, {
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    resp.end();
+                } catch (err) {
+                    resp.writeHead(500, "Failed to stop Rserve. " + err);
+                    resp.end();
+                }
             });
         } else if (reqURL.pathname === "/stop") {
             resp.writeHead(200);
@@ -100,7 +115,7 @@ function config(query) {
         
         // __dirname cannot be used in allTests.js since browserify converts to absolute path format based on web root dir.
         // Here, converts password file path to absolute path. Rserve only accept absolute path.
-        if (key === "pwdfile") {
+        if (key === "pwdfile" || key === "source") { // TODO: check config parameter list
             if (! path.isAbsolute(val)) {
                 val = path.resolve(__dirname, val);
             }
@@ -112,22 +127,37 @@ function config(query) {
 }
 
 function startRserve(config, cb) {
+    let args = [];
     
-    let args = Object.keys(config).reduce(function(args, key) {
+    let pidFileName = `rserve${new Date().getTime()}.pid`;
+    let pidFile = path.resolve(__dirname, pidFileName);
+    args.push("--RS-pidfile", pidFile);
+    
+    Object.keys(config).forEach(function(key) {
         let val = config[key];
-        return args.concat("--RS-set", key + "=" + val);
-    }, []);
+        args.push("--RS-set", key + "=" + val);
+    });
     
     // R command spawns Rserve process and exit.
     let proc = spawn("R", ["CMD", "Rserve", "--vanilla"].concat(args), {stdio: "ignore"});
     proc.on("uncaughtException", function(err) {
         cb(err);
     });
-    proc.on("exit", function() {
-        cb(null, proc);
-    });
     
-    console.log("Rserve (pid:" + proc.pid + ") started with config option " + JSON.stringify(config) + "\n");
+    let watcher = fs.watch(__dirname, function(_evt, fileName) {
+        if (fileName === pidFileName) {
+            let pid = parseInt(fs.readFileSync(pidFile, "utf8"));
+            
+            let info = {
+                pid: pid,
+                basedir: path.resolve(__dirname, "../..")
+            };
+            cb(null, info);
+            watcher.close();
+            
+            console.log("Rserve (pid:" + pid + ") started with config option " + JSON.stringify(config) + "\n");
+        }
+    });
 }
 
 if (process.argv.indexOf("--stop") !== -1) {

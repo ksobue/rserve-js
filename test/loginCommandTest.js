@@ -1,10 +1,11 @@
 /*eslint-env mocha*/
 "use strict";
 
+const expect = require("chai").expect;
+const startRserve = require("./startRserve");
+const Rserve = require("..");
+
 module.exports = function(test) {
-    const expect = require("chai").expect;
-    const Rserve = require("..");
-    const startRserve = require("./startRserve");
     
     describe(test.title, function() {
         
@@ -17,8 +18,8 @@ module.exports = function(test) {
         
         describe("CMD_login command", function() {
             it("accepts user with valid credential [ARuc]", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     client.login("foo", "bar", function(err) {
                         expect(err).to.be.null;
@@ -29,8 +30,8 @@ module.exports = function(test) {
             });
             
             it("reject login with invalid credential [ARuc]", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     client.login("foo", "buzz", function(err) {
                         expect(err).not.to.be.null;
@@ -41,8 +42,8 @@ module.exports = function(test) {
             });
             
             it("accepts user with valid credential [ARpt]", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     // Hack to force using ARpt.
                     // ARuc seems always enabled and client.js only falls back to ARpt when ARuc is not available.
@@ -58,8 +59,8 @@ module.exports = function(test) {
             });
             
             it("rejects login with invalid credential [ARpt]", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     // Hack to force using ARpt.
                     // ARuc seems always enabled and client.js only falls back to ARpt when ARuc is not available.
@@ -77,8 +78,8 @@ module.exports = function(test) {
         
         describe("CMD_switch command", function() {
             it("accept TLS protocol", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     client.switch("TLS", function(err) {
                         expect(err).to.be.null;
@@ -91,8 +92,8 @@ module.exports = function(test) {
         
         describe("CMD_keyReq command", function() {
             it("returns authentication key and public key", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     client.keyReq("rsa-authkey", function(err, authKey, publicKey) {
                         expect(err).to.be.null;
@@ -108,8 +109,8 @@ module.exports = function(test) {
         describe("CMD_secLogin command", function() {
             this.timeout(5000); // Encryption can take time.
             it("accept user with encrypted credential", function(done) {
-                let client = Rserve.connect(test.url, function(loginRequired) {
-                    expect(loginRequired).to.be.true;
+                let client = Rserve.connect(test.url, function(err) {
+                    expect(err).to.be.null;
                     
                     client.keyReq("rsa-authkey", function(err, authKey, publicKey) {
                         expect(err).to.be.null;
@@ -127,23 +128,25 @@ module.exports = function(test) {
         });
         
         after(function(done) {
-            let client = Rserve.connect(test.url, function(loginRequired) {
-                if (loginRequired) {
-                    client.login("foo", "bar", function(err) {
+            let client = Rserve.connect(test.url, function(err) {
+                if (err) {
+                    throw err;
+                }
+                
+                client.login("foo", "bar", function(err) {
+                    if (err) {
+                        throw err;
+                    }
+                    
+                    client.shutdown(null, function(err) {
                         if (err) {
                             throw err;
                         }
                         
-                        client.shutdown(null, function(err) {
-                            if (err) {
-                                throw err;
-                            }
-                            
-                            client.close();
-                            done();
-                        });
+                        client.close();
+                        done();
                     });
-                }
+                });
             });
         });
     });

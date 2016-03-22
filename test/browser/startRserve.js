@@ -34,7 +34,38 @@ let startRserve = function(config, cb) {
             });
             res.on("end", function() {
                 let info = JSON.parse(Buffer.concat(buffers).toString("utf8"));
-                cb(null, info);
+                
+                let server = {
+                    basedir: info.basedir,
+                    close: function(cb) {
+                        let query = querystring.stringify({
+                            pid: info.pid
+                        });
+                        let req = http.request(
+                            {
+                                method: "POST",
+                                hostname: "localhost",
+                                port: 6060,
+                                path: "/stop-r-serve",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded",
+                                    "Content-Length": query.length
+                                }
+                            },
+                            function(res) {
+                                if (res.statusCode !== 200) {
+                                    cb(new Error("Failed to stop Rserve."));
+                                    return;
+                                }
+                                
+                                cb(null);
+                            }
+                        );
+                        req.write(query);
+                        req.end();
+                    }
+                };
+                cb(null, server);
             });
         }
     );

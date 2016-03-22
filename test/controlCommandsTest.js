@@ -1,10 +1,12 @@
 /*eslint-env mocha*/
 "use strict";
 
+const expect = require("chai").expect;
+const startRserve = require("./startRserve");
+const Rserve = require("..");
+const simplifySEXP = require("../src/util").simplifySEXP;
+
 module.exports = function(test) {
-    const expect = require("chai").expect;
-    const Rserve = require("..");
-    const startRserve = require("./startRserve");
 
     describe(test.title, function() {
         let client;
@@ -27,9 +29,9 @@ module.exports = function(test) {
                     setTimeout(function() {
                         // Subsequent connection will start with the above string already evaluated.
                         let otherClient = Rserve.connect(test.url, function() {
-                            otherClient.eval("ctrlEvalTest", function(err, result) {
+                            otherClient.eval("ctrlEvalTest", function(err, sexp) {
                                 expect(err).to.be.null;
-                                expect(result).to.deep.equal(["control eval test"]);
+                                expect(simplifySEXP(sexp)).to.deep.equal(["control eval test"]);
                                 otherClient.close();
                                 done();
                             });
@@ -48,9 +50,9 @@ module.exports = function(test) {
                     setTimeout(function() {
                         // Subsequent connection will start with the above string already evaluated.
                         let otherClient = Rserve.connect(test.url, function() {
-                            otherClient.eval("ctrlSourceTest", function(err, result) {
+                            otherClient.eval("ctrlSourceTest", function(err, sexp) {
                                 expect(err).to.be.null;
-                                expect(result).to.deep.equal(["control source test"]);
+                                expect(simplifySEXP(sexp)).to.deep.equal(["control source test"]);
                                 otherClient.close();
                                 done();
                             });

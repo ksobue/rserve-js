@@ -11,15 +11,16 @@ const network = require("./net_node");
 const decodeMessage = require("./QAP1_decode");
 const encodeMessage = require("./QAP1_encode");
 const errorMessage = require("./error");
-const simplifySEXP = require("./util").simplifySEXP;
-
 
 class RserveClient extends EventEmitter {
     
     constructor(url, connectListener) {
         super();
         
-        this.on("connect", connectListener);
+        this.on("connect", function(sexp) {
+            // sexp: list of object-capabilities in ocap mode, or null in legacy mode.
+            connectListener(null, sexp);
+        });
         
         let client = network.connect(url);
         
@@ -41,10 +42,7 @@ class RserveClient extends EventEmitter {
                         try {
                             this.info = decodeServerCapability(idString);
                             
-                            let loginRequired = this.info.some(function(info) {
-                                return info.startsWith("AR");
-                            });
-                            this.emit("connect", loginRequired);
+                            this.emit("connect", null);
                         } catch (err) {
                             this.emit("error", err);
                         }
@@ -52,28 +50,32 @@ class RserveClient extends EventEmitter {
                 } else if (mode === "RsOC") { // Rserve runnning in Object-Capability mode
                     if (readBuffers.length >= 16) {
                         let headerBuffer = readBuffers.slice(0, 16);
-                        let _command = headerBuffer.readInt32LE(0);
-                        let length_0_31 = headerBuffer.readInt32LE(4);
-                        let _messageId = headerBuffer.readInt32LE(8);
-                        let length_32_63 = headerBuffer.readInt32LE(12);
-                        
-                        let length = length_32_63 * Math.pow(2, 32) + length_0_31;
-                        if (length > Number.MAX_SAFE_INTEGER) { // 8191 peta bytes
-                            throw new Error("Incoming message data is too large to be handled in JavaScript. (" + length + "bytes)");
-                        }
-                        
-                        if (readBuffers.length >= 16 + length) {
-                            let buffer = readBuffers.splice(0, 16 + length).slice();
+                        try {
+                            let _command = headerBuffer.readInt32LE(0);
+                            let length_0_31 = headerBuffer.readInt32LE(4);
+                            let _messageId = headerBuffer.readInt32LE(8);
+                            let length_32_63 = headerBuffer.readInt32LE(12);
                             
-                            let resp = decodeMessage(buffer);
-                            if (new Buffer("RsOC", "utf8").readInt32LE(0) !== resp.command) {
-                                let statusCode = _.CMD_STAT(resp.command);
-                                this.emit("error", new Error(errorMessage(statusCode)));
-                                return;
+                            let length = length_32_63 * Math.pow(2, 32) + length_0_31;
+                            if (length > Number.MAX_SAFE_INTEGER) { // 8191 peta bytes
+                                throw new Error("Incoming message data is too large to be handled in JavaScript. (" + length + "bytes)");
                             }
                             
-                            let sexp = resp.params[0];
-                            this.emit("connect", sexp);
+                            if (readBuffers.length >= 16 + length) {
+                                let buffer = readBuffers.splice(0, 16 + length).slice();
+                                
+                                let resp = decodeMessage(buffer);
+                                if (new Buffer("RsOC", "utf8").readInt32LE(0) !== resp.command) {
+                                    let statusCode = _.CMD_STAT(resp.command);
+                                    this.emit("error", new Error(errorMessage(statusCode)));
+                                    return;
+                                }
+                                
+                                let sexp = resp.params[0];
+                                this.emit("connect", sexp);
+                            }
+                        } catch (err) {
+                            this.emit("error", err);
                         }
                     }
                 } else {
@@ -215,8 +217,7 @@ class RserveClient extends EventEmitter {
             }
             
             let sexp = msg.params[0];
-            let jsObj = simplifySEXP(sexp);
-            cb(null, jsObj, sexp);
+            cb(null, sexp);
         });
     }
 
@@ -334,7 +335,7 @@ class RserveClient extends EventEmitter {
 
     ocCall(sexp, cb) {
         this.sendMessage({
-            command: _.CMD_ocCall,
+            command: _.CMD_OCcall,
             params: [{
                 type: _.DT_SEXP,
                 value: sexp
@@ -347,8 +348,7 @@ class RserveClient extends EventEmitter {
             }
             
             let sexp = msg.params[0];
-            let jsObj = simplifySEXP(sexp);
-            cb(null, jsObj, sexp);
+            cb(null, sexp);
         });
     }
 

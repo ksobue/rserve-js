@@ -1,11 +1,13 @@
 /*eslint-env mocha*/
 "use strict";
 
+const expect = require("chai").expect;
+const startRserve = require("./startRserve");
+const Rserve = require("..");
+const _ = Rserve.const;
+const simplifySEXP = require("../src/util").simplifySEXP;
+
 module.exports = function(test) {
-    const expect = require("chai").expect;
-    const Rserve = require("..");
-    const startRserve = require("./startRserve");
-    const _ = Rserve.const;
 
     describe(test.title, function() {
         let client;
@@ -23,9 +25,9 @@ module.exports = function(test) {
                     expect(err).to.be.null;
                     expect(arguments).to.have.length(1);
                     
-                    client.eval("voidEvalTest", function(err, response) {
+                    client.eval("voidEvalTest", function(err, sexp) {
                         expect(err).to.be.null;
-                        expect(response).to.deep.equal([123]);
+                        expect(simplifySEXP(sexp)).to.deep.equal([123]);
                         
                         done();
                     });
@@ -35,20 +37,20 @@ module.exports = function(test) {
         
         describe("CMD_eval command", function() {
             function evaluatesTo(evalText, expectedJsObj, expectedSEXP, done, skipReEvaluation) {
-                client.eval(evalText, function(err, jsObj, sexp) {
+                client.eval(evalText, function(err, sexp) {
                     expect(err).to.be.null;
-                    expect(jsObj).to.deep.equal(expectedJsObj);
                     expect(sexp).to.deep.equal(expectedSEXP);
+                    expect(simplifySEXP(sexp)).to.deep.equal(expectedJsObj);
                     
                     if (skipReEvaluation) {
                         done();
                         return;
                     }
                     
-                    client.eval(sexp, function(err, jsObj, sexp) {
+                    client.eval(sexp, function(err, sexp) {
                         expect(err).to.be.null;
-                        expect(jsObj).to.deep.equal(expectedJsObj);
                         expect(sexp).to.deep.equal(expectedSEXP);
+                        expect(simplifySEXP(sexp)).to.deep.equal(expectedJsObj);
                         
                         done();
                     });
@@ -656,9 +658,9 @@ module.exports = function(test) {
                     function(err) {
                         expect(err).to.be.null;
                         
-                        client.eval("test", function(err, result) {
+                        client.eval("test", function(err, sexp) {
                             expect(err).to.be.null;
-                            expect(result).to.deep.equal(["hello", "world"]);
+                            expect(simplifySEXP(sexp)).to.deep.equal(["hello", "world"]);
                             done();
                         });
                     }
@@ -677,9 +679,9 @@ module.exports = function(test) {
                     function(err) {
                         expect(err).to.be.null;
                         
-                        client.eval("test", function(err, result) {
+                        client.eval("test", function(err, sexp) {
                             expect(err).to.be.null;
-                            expect(result).to.deep.equal(["hello", "world"]);
+                            expect(simplifySEXP(sexp)).to.deep.equal(["hello", "world"]);
                             done();
                         });
                     }
@@ -770,9 +772,9 @@ module.exports = function(test) {
                     expect(err).to.be.null;
                     expect(arguments).to.have.length(1);
                     
-                    client.eval("c('Quebec', 'Québec', 'こんにちは', '世界')", function(err, response) {
+                    client.eval("c('Quebec', 'Québec', 'こんにちは', '世界')", function(err, sexp) {
                         expect(err).to.be.null;
-                        expect(response).to.deep.equal(["Quebec", "Québec", "こんにちは", "世界"]);
+                        expect(simplifySEXP(sexp)).to.deep.equal(["Quebec", "Québec", "こんにちは", "世界"]);
                         done();
                     });
                 });
@@ -790,12 +792,6 @@ module.exports = function(test) {
                 });
             });
         });
-        
-        it("should support CMD_ocCall");
-        it("should support CMD_ocInit");
-        it("should support CMD_detachSession");
-        it("should support CMD_detachVoidEval");
-        it("should support CMD_attachSession");
         
         after(function() {
             client.close();
