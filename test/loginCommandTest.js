@@ -8,10 +8,12 @@ const Rserve = require("..");
 module.exports = function(test) {
     
     describe(test.title, function() {
+        let server;
         
         before(function(done) {
-            startRserve(test.config, function(err, _info) {
+            startRserve(test.config, function(err, srvr) {
                 expect(err).to.be.null;
+                server = srvr;
                 done();
             });
         });
@@ -128,25 +130,9 @@ module.exports = function(test) {
         });
         
         after(function(done) {
-            let client = Rserve.connect(test.url, function(err) {
-                if (err) {
-                    throw err;
-                }
-                
-                client.login("foo", "bar", function(err) {
-                    if (err) {
-                        throw err;
-                    }
-                    
-                    client.shutdown(null, function(err) {
-                        if (err) {
-                            throw err;
-                        }
-                        
-                        client.close();
-                        done();
-                    });
-                });
+            server.close(function(err) {
+                expect(err).to.be.null;
+                done();
             });
         });
     });

@@ -2,7 +2,7 @@
 
 const _ = require("./Rsrv");
 
-function simplifySEXP(sexp) {
+function simplifySEXP(sexp, client) {
     let value = sexp.value;
     
     let attr;
@@ -17,7 +17,9 @@ function simplifySEXP(sexp) {
     case _.XT_VECTOR_EXP:
     case _.XT_VECTOR_STR:
         if (attr === undefined) {
-            value = sexp.value.map(simplifySEXP);
+            value = sexp.value.map(function(value) {
+                return simplifySEXP(value, client);
+            });
             
         } else if (attr["class"] !== undefined && attr["class"][0] === "data.frame") {
             let columnLabels = attr["names"];
@@ -110,6 +112,25 @@ function simplifySEXP(sexp) {
                 value = intVals.map(function(intVal) {
                     return levels[intVal - 1];
                 });
+                
+            } else if (attr["class"] !== undefined && attr["class"][0] === "OCref") {
+                let ocRef = sexp.value[0];
+                value = function() {
+                    let args = Array.prototype.slice.apply(arguments);
+                    let cb = args.pop();
+                    let ocValues = [ocRef].concat(args);
+                    let reqSexp = {
+                        type: _.XT_LANG_NOTAG,
+                        value: ocValues.map(function(ocValue) {
+                            return {
+                                type: _.XT_ARRAY_STR,
+                                value: [ocValue]
+                            };
+                        })
+                    };
+                    client.ocCall(reqSexp, cb);
+                };
+                
             } else if (attr.dim !== undefined) { // matrix
                 let rows = attr.dim[0];
                 let cols = attr.dim[1];

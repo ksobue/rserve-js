@@ -24,19 +24,30 @@ module.exports = function(test) {
             it("should return initial capabilities", function(done) {
                 let client = Rserve.connect(test.url, function(err, sexp) {
                     expect(err).to.be.null;
-                    let list = simplifySEXP(sexp);
+                    let list = simplifySEXP(sexp, client);
                     expect(list.length).to.equal(2);
                     expect(list[0]).to.deep.equal(["object capability test"]);
+                    expect(list[1]).to.be.a("function"); // opaque reference to the closure of 'strLen' function
+                    client.close();
+                    done();
+                });
+            });
+        });
+        
+        describe("CMD_ocCall command", function() {
+            it("should execute wrapped R function", function(done) {
+                let client = Rserve.connect(test.url, function(err, sexp) {
+                    expect(err).to.be.null;
                     
-                    let ocStrLenOpaque = list[1];
-                    let strLenOcRef = ocStrLenOpaque[0];
+                    let opaque = sexp.value[1];
+                    let strLenRef = opaque.value[0];
                     
-                    var req = {
+                    var strLenCall = {
                         type: _.XT_LANG_NOTAG,
                         value: [
                             {
                                 type: _.XT_ARRAY_STR,
-                                value: [strLenOcRef]
+                                value: [strLenRef]
                             },
                             {
                                 type: _.XT_ARRAY_STR,
@@ -44,7 +55,15 @@ module.exports = function(test) {
                             }
                         ]
                     };
-                    client.ocCall(req, function(err, sexp) {
+                    client.ocCall(strLenCall, function(err, sexp) {
+                        expect(err).to.be.null;
+                        expect(simplifySEXP(sexp)).to.deep.equal([11]);
+                    });
+                    
+                    let list = simplifySEXP(sexp, client);
+                    expect(list.length).to.equal(2);
+                    let strLenFn = list[1];
+                    strLenFn("hello world", function(err, sexp) {
                         expect(err).to.be.null;
                         expect(simplifySEXP(sexp)).to.deep.equal([11]);
                         client.close();
@@ -52,10 +71,6 @@ module.exports = function(test) {
                     });
                 });
             });
-        });
-        
-        describe("CMD_ocCall command", function() {
-            it("should be supported");
         });
         
         after(function(done) {
