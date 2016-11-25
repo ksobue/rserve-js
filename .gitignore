@@ -2,4 +2,4 @@ node_modules
 coverage
 .coveralls.yml
 rserve-js-browser.js
-
+.DS_Store
