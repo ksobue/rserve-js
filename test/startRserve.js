@@ -21,7 +21,7 @@ let startRserve = function(config, cb) {
     });
     proc.on("exit", function() {
         let info = {
-            pid: proc.id,
+            pid: proc.pid,
             basedir: process.cwd()
         };
         cb(null, info);
