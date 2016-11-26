@@ -5,6 +5,15 @@ RServe client in JavaScript
 
 This node module will communicate with R/Rserve over TCP/IP socket, allowing user to evaluate R statements from JavaScript and get the result as JavaScript object.
 
+## Prerequisites
+    $ xcode-select --install # for macOS Sierra 10.12
+    $ brew install openssl                                  # Required for TLS support of Rserve.
+    $ export LDFLAGS="-L/usr/local/opt/openssl/lib"         # Set as per instruction in brew output.
+    $ export CPPFLAGS="-I/usr/local/opt/openssl/include"    # Set as per instruction in brew output.
+    $ wget https://rforge.net/Rserve/snapshot/Rserve_1.8-5.tar.gz
+    $ R CMD INSTALL Rserve_1.8-5.tar.gz
+    $ brew uninstall openssl
+
 ## Installation
     $ npm install rserve-js
   
